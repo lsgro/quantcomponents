@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" modified="modify" name="com.quantcomponents.algo.linearCommissionCalculator">
+   <implementation class="com.quantcomponents.algo.service.ConfigurableLinearCommissionCalculator"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.ICommissionCalculator"/>
+   </service>
+   <property name="factor.fixed" type="String" value="0.5"/>
+   <property name="factor.size" type="String" value="0"/>
+   <property name="factor.value" type="String" value="0"/>
+</scr:component>

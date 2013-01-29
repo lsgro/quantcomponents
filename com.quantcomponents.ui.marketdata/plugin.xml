@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="com.quantcomponent.ui.marketdata.category"
+            name="Market Data">
+      </category>
+      <view
+            category="com.quantcomponent.ui.marketdata.category"
+            class="com.quantcomponents.ui.marketdata.MarketDataManagersView"
+            icon="icons/marketDataManager.png"
+            id="com.quantcomponent.ui.marketdata.marketDataManagers"
+            name="Market Data Managers"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="com.quantcomponent.ui.marketdata.category"
+            class="com.quantcomponents.ui.marketdata.StockDatabaseChartView"
+            icon="icons/stockDatabase.png"
+            id="com.quantcomponents.ui.marketdata.stockDatabaseChart"
+            name="Stock Database Chart"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="com.quantcomponent.ui.marketdata.category"
+            class="com.quantcomponents.ui.marketdata.StockDatabaseChartView"
+            icon="icons/stockDatabase.png"
+            id="com.quantcomponents.ui.marketdata.stockDatabaseChartMulti"
+            name="Stock Database Chart Multiple"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="false"
+            class="com.quantcomponents.ui.marketdata.AutoUpdateIconDecorator"
+            id="com.quantcomponents.ui.marketdata.autoUpdateDecorator"
+            label="Market Data Auto Update"
+            lightweight="true"
+            location="BOTTOM_RIGHT"
+            state="false">
+         <description>
+            It is diplayed when market data is being updated in realtime
+         </description>
+      </decorator>
+   </extension>
+
+</plugin>

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Serializing container for algo hierarchy
+Bundle-SymbolicName: com.quantcomponents.algo.container.serializing
+Bundle-Version: 1.0.0
+Bundle-Vendor: quantcomponents.com
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.algo,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.series,
+ com.quantcomponents.marketdata
+DynamicImport-Package: *
+Service-Component: OSGI-INF/hierarchyContainer.xml
+Export-Package: com.quantcomponents.algo.container.serializing
+

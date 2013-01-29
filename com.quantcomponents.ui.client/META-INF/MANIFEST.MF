@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Client framework activator
+Bundle-SymbolicName: com.quantcomponents.ui.client;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: com.quantcomponents.ui.client.QuantComponentsClientPlugin
+Bundle-Vendor: quantcomponents.com
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Import-Package: com.quantcomponents.ui.core

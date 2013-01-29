@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" immediate="true" name="com.quantcomponents.marketdata.proxy.stockDatabaseProxyFactory">
+   <implementation class="com.quantcomponents.marketdata.osgi.proxy.StockDatabaseProxyFactory"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.osgi.IStockDatabaseProxyFactory"/>
+   </service>
+   <reference bind="setStockDatabaseHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IStockDatabaseHost" name="IStockDatabaseHost" policy="static"/>
+   <reference bind="setOhlcTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IMutableOHLCTimeSeriesHost" name="IMutableOHLCTimeSeriesHost" policy="static"/>
+   <reference bind="setTickTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IMutableTickTimeSeriesHost" name="IMutableTickTimeSeriesHost" policy="static"/>
+   <reference bind="setVirtualTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IOHLCTimeSeriesHost" name="IOHLCTimeSeriesHost" policy="static"/>
+   <reference bind="setOhlcSeriesIteratorHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IOHLCTimeSeriesIteratorHost" name="IOHLCTimeSeriesIteratorHost" policy="static"/>
+   <reference bind="setTickSeriesIteratorHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.ITickTimeSeriesIteratorHost" name="ITickTimeSeriesIteratorHost" policy="static"/>
+   <reference bind="setOhlcSeriesListenerHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IOHLCTimeSeriesListenerHostLocal" name="IOHLCTimeSeriesListenerHostLocal" policy="static"/>
+   <reference bind="setTickSeriesListenerHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.ITickTimeSeriesListenerHostLocal" name="ITickTimeSeriesListenerHostLocal" policy="static"/>
+</scr:component>

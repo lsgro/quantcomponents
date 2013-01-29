@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.quantcomponents.core.osgi.shellInterpreter">
+   <implementation class="com.quantcomponents.core.osgi.internal.ShellInterpreter"/>
+   <service>
+      <provide interface="com.quantcomponents.core.osgi.internal.ShellInterpreter"/>
+   </service>
+   <property name="osgi.command.scope" type="String" value="quant"/>
+   <property name="osgi.command.function" type="String">
+        help
+		mytimezone
+		timezone
+		baredate
+		date
+		barsize
+		datatype
+		sectype
+		optionright
+		contract
+		taskmonitor
+		serieslistener
+   </property>
+</scr:component>

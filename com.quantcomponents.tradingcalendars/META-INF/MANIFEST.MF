@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Trading Calendar Server
+Bundle-SymbolicName: com.quantcomponents.tradingcalendars
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.calendar,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.core.xml,
+ org.osgi.framework;version="1.7.0"
+Bundle-Activator: com.quantcomponents.tradingcalendars.Activator

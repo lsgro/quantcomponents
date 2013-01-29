@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Base classes for algorithmic trading
+Bundle-SymbolicName: com.quantcomponents.algo
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.exceptions,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.series,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.marketdata
+Export-Package: com.quantcomponents.algo

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="com.quantcomponents.algo.proxy.outputSeriesListenerHost">
+   <implementation class="com.quantcomponents.core.osgi.SeriesListenerHost"/>
+   <service>
+      <provide interface="com.quantcomponents.core.osgi.ISeriesListenerHost"/>
+      <provide interface="com.quantcomponents.core.osgi.ISeriesListenerHostLocal"/>
+   </service>
+   <property name="series.name" type="String" value="outputSeries"/>
+</scr:component>

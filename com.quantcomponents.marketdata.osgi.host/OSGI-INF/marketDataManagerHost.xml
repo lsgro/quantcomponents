@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="require" deactivate="deactivate" immediate="true" name="com.quantcomponents.marketdata.host.marketDataManagerHost">
+   <implementation class="com.quantcomponents.marketdata.osgi.host.MarketDataManagerHost"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.osgi.IMarketDataManagerHost"/>
+   </service>
+   <reference bind="setDataManagerService" cardinality="1..1" interface="com.quantcomponents.marketdata.IMarketDataManager" name="IMarketDataManager" policy="static"/>
+   <reference bind="setStockDatabaseHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IStockDatabaseHostLocal" name="IStockDatabaseHostLocal" policy="static"/>
+   <reference bind="setTaskMonitorHost" cardinality="0..1" interface="com.quantcomponents.core.remote.ITaskMonitorHost" name="ITaskMonitorHost" policy="dynamic" unbind="resetTaskMonitorHost"/>
+</scr:component>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" deactivate="deactivate" name="com.quantcomponents.algo.simulatedExecutionServiceFactory">
+   <implementation class="com.quantcomponents.algo.service.SimulatedExecutionServiceFactory"/>
+   <reference bind="setCommissionCalculator" cardinality="1..1" interface="com.quantcomponents.algo.ICommissionCalculator" name="ICommissionCalculator" policy="static"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.ISimulatedExecutionServiceFactory"/>
+   </service>
+</scr:component>

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Osgi integration for Algo classes
+Bundle-SymbolicName: com.quantcomponents.algo.osgi
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.algo,
+ com.quantcomponents.core.exceptions,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.osgi,
+ com.quantcomponents.core.remote,
+ com.quantcomponents.marketdata.osgi
+Export-Package: com.quantcomponents.algo.osgi
+Service-Component: OSGI-INF/shellInterpreter.xml

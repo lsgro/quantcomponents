@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" name="com.quantcomponents.algo.container.serializing.hierarchyContainer">
+   <implementation class="com.quantcomponents.algo.container.serializing.SerializingTradingAgentHierarchyContainer"/>
+   <reference bind="setMarketDataManager" cardinality="1..1" interface="com.quantcomponents.marketdata.IMarketDataManager" name="IMarketDataManager" policy="static"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.ITradingAgentHierarchyContainer"/>
+   </service>
+</scr:component>

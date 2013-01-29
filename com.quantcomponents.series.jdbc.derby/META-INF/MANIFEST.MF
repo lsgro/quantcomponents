@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Stock DB persisten container with Derby adapter
+Bundle-SymbolicName: com.quantcomponents.series.jdbc.derby
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.series,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.marketdata,
+ com.quantcomponents.series.jdbc,
+ org.apache.derby.jdbc,
+ org.osgi.framework;version="1.7.0",
+ org.osgi.service.jdbc;version="1.0.0"
+Service-Component: OSGI-INF/stockDatabaseContainer.xml

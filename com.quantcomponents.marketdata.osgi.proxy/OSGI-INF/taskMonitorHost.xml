@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="require" deactivate="deactivate" name="com.quantcomponents.marketdata.proxy.taskMonitorHost">
+   <implementation class="com.quantcomponents.core.remote.TaskMonitorHost"/>
+   <service>
+      <provide interface="com.quantcomponents.core.remote.ITaskMonitorHost"/>
+      <provide interface="com.quantcomponents.core.remote.ITaskMonitorHostLocal"/>
+   </service>
+   <reference cardinality="1..1" interface="com.quantcomponents.core.remote.IUIDGenerator" name="IUIDGenerator" policy="static" bind="setUidGenerator"/>
+</scr:component>

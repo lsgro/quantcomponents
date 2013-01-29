@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Standard Trading Calendars
+Bundle-SymbolicName: com.quantcomponents.tradingcalendars.standard
+Bundle-Version: 1.0.0
+Bundle-Vendor: quantcomponents.com
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7

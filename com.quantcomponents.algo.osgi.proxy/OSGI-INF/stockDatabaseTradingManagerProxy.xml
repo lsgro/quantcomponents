@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="com.quantcomponents.algo.proxy.stockDatabaseTradingManagerProxy">
+   <implementation class="com.quantcomponents.algo.osgi.proxy.StockDatabaseTradingManagerProxy"/>
+   <reference bind="setTradingAgentManagerHost" cardinality="1..1" interface="com.quantcomponents.algo.osgi.IStockDatabaseTradingManagerHost" name="IStockDatabaseTradingManagerHost" policy="static"/>
+   <reference bind="setStockDatabaseHandleMap" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IStockDatabaseHandleMap" name="IStockDatabaseHandleMap" policy="static"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.IStockDatabaseTradingManager"/>
+   </service>
+   <reference bind="setSeriesHost" cardinality="1..1" interface="com.quantcomponents.core.osgi.ISeriesHost" name="ISeriesHost" policy="static" target="(series.name=outputSeries)"/>
+   <reference bind="setSeriesIteratorHost" cardinality="1..1" interface="com.quantcomponents.core.osgi.ISeriesIteratorHost" name="ISeriesIteratorHost" policy="static" target="(series.name=outputSeries)"/>
+   <reference bind="setListenerHost" cardinality="1..1" interface="com.quantcomponents.core.osgi.ISeriesListenerHostLocal" name="ISeriesListenerHostLocal" policy="static" target="(series.name=outputSeries)"/>
+</scr:component>

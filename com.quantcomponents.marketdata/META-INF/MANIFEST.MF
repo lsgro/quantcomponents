@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Data Management Service
+Bundle-SymbolicName: com.quantcomponents.marketdata
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.calendar,
+ com.quantcomponents.core.exceptions,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.remote,
+ com.quantcomponents.core.series,
+ com.quantcomponents.core.utils
+Export-Package: com.quantcomponents.marketdata

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="com.quantcomponents.marketdata.osgi.shellInterpreter">
+   <implementation class="com.quantcomponents.marketdata.osgi.internal.ShellInterpreter"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.osgi.internal.ShellInterpreter"/>
+   </service>
+   <property name="osgi.command.scope" type="String" value="quant"/>
+   <property name="osgi.command.function" type="String">
+marketdataprovider
+marketdatamanager
+   </property>
+   <reference bind="setMarketDataManager" cardinality="1..1" interface="com.quantcomponents.marketdata.IMarketDataManager" name="IMarketDataManager" policy="static"/>
+   <reference bind="setMarketDataProvider" cardinality="1..1" interface="com.quantcomponents.marketdata.IMarketDataProvider" name="IMarketDataProvider" policy="static"/> 
+</scr:component>

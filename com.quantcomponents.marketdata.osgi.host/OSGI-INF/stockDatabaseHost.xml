@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="require" deactivate="deactivate" immediate="false" name="com.quantcomponents.marketdata.host.stockDatabaseHost">
+   <implementation class="com.quantcomponents.marketdata.osgi.host.StockDatabaseHost"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.osgi.IStockDatabaseHostLocal" />
+      <provide interface="com.quantcomponents.marketdata.osgi.IStockDatabaseHost"/>
+   </service>
+   <reference bind="setUidGenerator" cardinality="1..1" interface="com.quantcomponents.core.remote.IUIDGenerator" name="IUIDGenerator" policy="static"/>
+   <reference bind="setOhlcTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IMutableOHLCTimeSeriesHostLocal" name="IMutableOHLCTimeSeriesHostLocal" policy="static" target="(series.name=ohlc)"/>
+   <reference bind="setTickTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.ITickTimeSeriesHostLocal" name="ITickTimeSeriesHostLocal" policy="static" target="(series.name=tick)"/>
+   <reference bind="setVirtualTimeSeriesHost" cardinality="1..1" interface="com.quantcomponents.marketdata.osgi.IOHLCTimeSeriesHostLocal" name="IOHLCTimeSeriesHostLocal" policy="static" target="(series.name=virtual)"/>
+</scr:component>

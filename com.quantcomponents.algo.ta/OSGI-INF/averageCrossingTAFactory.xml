@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.quantcomponents.algo.ta.averageCrossingTAFactory">
+   <implementation class="com.quantcomponents.algo.ta.AverageCrossingTradingAgentFactory"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.ITradingAgentFactory"/>
+   </service>
+   <reference bind="setTradingCalendarManager" cardinality="1..1" interface="com.quantcomponents.core.calendar.ITradingCalendarManager" name="ITradingCalendarManager" policy="static"/>
+</scr:component>

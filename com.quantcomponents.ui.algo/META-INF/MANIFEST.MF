@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: UI for algo services
+Bundle-SymbolicName: com.quantcomponents.ui.algo;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: com.quantcomponents.ui.algo.TradingAgentPlugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui;bundle-version="3.103.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.algo,
+ com.quantcomponents.chart.series,
+ com.quantcomponents.core.calendar,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.remote,
+ com.quantcomponents.core.series,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.marketdata,
+ com.quantcomponents.ui.core,
+ com.quantcomponents.ui.marketdata,
+ org.eclipse.core.resources

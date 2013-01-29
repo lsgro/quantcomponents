@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Proxy for remote MarketDataManager service
+Bundle-SymbolicName: com.quantcomponents.marketdata.osgi.proxy
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.exceptions,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.osgi,
+ com.quantcomponents.core.remote,
+ com.quantcomponents.marketdata,
+ com.quantcomponents.marketdata.osgi,
+ org.osgi.framework;version="1.7.0",
+ org.osgi.service.log;version="1.3.0"
+Service-Component: OSGI-INF/marketDataManagerProxy.xml,OSGI-INF/ohlcTimeSeriesListenerHost.xml,
+ OSGI-INF/stockDatabaseProxyFactory.xml,OSGI-INF/taskMonitorHost.xml,OSGI-INF/tickTimeSeriesListenerHost.xml,
+ OSGI-INF/uidGenerator.xml

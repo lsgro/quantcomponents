@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="com.quantcomponents.algo.host.tradingManager">
+   <implementation class="com.quantcomponents.algo.service.TradingManager"/>
+   <reference bind="setHierarchyContainer" cardinality="1..1" interface="com.quantcomponents.algo.ITradingAgentHierarchyContainer" name="ITradingAgentHierarchyContainer" policy="static"/>
+   <reference bind="setThreadPool" cardinality="1..1" interface="java.util.concurrent.ExecutorService" name="ExecutorService" policy="static"/>
+   <reference bind="setLiveExecutionService" cardinality="0..1" interface="com.quantcomponents.algo.IExecutionService" name="IExecutionService" policy="dynamic" unbind="resetLiveExecutionService"/>
+   <reference bind="setSimulatedExecutionServiceFactory" cardinality="0..1" interface="com.quantcomponents.algo.ISimulatedExecutionServiceFactory" name="ISimulatedExecutionServiceFactory" policy="dynamic" unbind="resetSimulatedExecutionServiceFactory"/>
+   <reference bind="addTradingAgentFactory" cardinality="0..n" interface="com.quantcomponents.algo.ITradingAgentFactory" name="ITradingAgentFactory" policy="dynamic" unbind="removeTradingAgentFactory"/>
+   <service>
+      <provide interface="com.quantcomponents.algo.ITradingManager"/>
+   </service>
+</scr:component>

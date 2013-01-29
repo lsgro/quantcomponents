@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Hook to write OSGi logs into the Eclipse log facility
+Bundle-SymbolicName: com.quantcomponents.ui.log
+Bundle-Version: 1.0.0
+Bundle-Activator: com.quantcomponents.ui.log.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui;bundle-version="3.103.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7

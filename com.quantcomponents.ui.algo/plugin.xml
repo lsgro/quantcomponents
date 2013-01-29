@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="com.quantcomponents.ui.algo.category"
+            name="Algo">
+      </category>
+      <view
+            category="com.quantcomponents.ui.algo.category"
+            class="com.quantcomponents.ui.algo.TradingManagersView"
+            icon="icons/tradingAgentManager.png"
+            id="com.quantcomponents.ui.algo.tradingManagers"
+            name="Trading Managers"
+            restorable="true">
+      </view>
+      <view
+            category="com.quantcomponents.ui.algo.category"
+            class="com.quantcomponents.ui.algo.TradingStatsView"
+            icon="icons/tradingStats.png"
+            id="com.quantcomponents.ui.algo.tradingStats"
+            name="Trades"
+            restorable="true">
+      </view>
+      <view
+            category="com.quantcomponents.ui.algo.category"
+            class="com.quantcomponents.ui.algo.EquityCurveView"
+            icon="icons/equityCurve.png"
+            id="com.quantcomponents.ui.algo.equityCurve"
+            name="Equity Curve"
+            restorable="true">
+      </view>
+      <view
+            category="com.quantcomponents.ui.algo.category"
+            class="com.quantcomponents.ui.algo.PositionView"
+            icon="icons/positions.png"
+            id="com.quantcomponents.ui.algo.positions"
+            name="Positions"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="false"
+            class="com.quantcomponents.ui.algo.ExecutionRunningDecorator"
+            id="com.quantcomponents.ui.algo.executionRunningDecorator"
+            label="Trading Agent Executing"
+            lightweight="true"
+            location="BOTTOM_RIGHT"
+            state="false">
+         <description>
+            Marks TradingAgentExecution objects while they are executing
+         </description>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.quantcomponents.ui.algo.DefaultPerspectiveFactory"
+            icon="icons/tradingAgentFactory.png"
+            id="com.quantcomponents.ui.algo.defaultPerspective"
+            name="Algo Trading">
+      </perspective>
+   </extension>
+
+</plugin>

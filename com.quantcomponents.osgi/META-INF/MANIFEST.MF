@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OSGi adapters for core classes
+Bundle-SymbolicName: com.quantcomponents.core.osgi
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.algo,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.remote,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.marketdata,
+ org.osgi.framework;version="1.7.0",
+ org.osgi.service.cm;version="1.4.0",
+ org.osgi.service.log;version="1.3.0"
+Export-Package: com.quantcomponents.core.osgi
+Service-Component: OSGI-INF/shellInterpreter.xml

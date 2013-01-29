@@ -1,0 +1,12 @@
+a = (quant:marketDataProvider)
+$a connect null
+dm = (data:dataManager)
+cc = $dm searchcontracts (quant:contract ES FUT USD) null
+c = $cc get 0
+sdb = $dm createstockdatabase $c (quant:barsize ONE_DAY) true (quant:defaulttimezone)
+$dm fillhistoricaldata $sdb (quant:date 2012 1 1 0 0 0) (quant:date 2012 3 30 0 0 0) null
+$dm startrealtimeupdate $sdb true null
+$dm stoprealtimeupdate $sdb
+v = $sdb getvirtualtimeseries
+$dm startrealtimeupdate $sdb false null
+

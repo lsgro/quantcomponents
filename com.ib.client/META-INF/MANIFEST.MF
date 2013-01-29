@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Interactive Brokers Client
+Bundle-SymbolicName: com.ib.client
+Bundle-Version: 9.67
+Bundle-Vendor: Interactive Brokers
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: com.ib.client

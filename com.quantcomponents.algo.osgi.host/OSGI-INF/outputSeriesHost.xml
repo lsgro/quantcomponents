@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="com.quantcomponents.algo.host.outputSeriesHost">
+   <implementation class="com.quantcomponents.core.osgi.SeriesHost"/>
+   <service>
+      <provide interface="com.quantcomponents.core.osgi.ISeriesHostLocal"/>
+      <provide interface="com.quantcomponents.core.osgi.ISeriesHost"/>
+   </service>
+   <reference bind="setSeriesIteratorHost" cardinality="1..1" interface="com.quantcomponents.core.osgi.ISeriesIteratorHostLocal" name="ISeriesIteratorHostLocal" policy="static" target="(series.name=outputSeries)"/>
+   <reference bind="setSeriesListenerHost" cardinality="0..1" interface="com.quantcomponents.core.osgi.ISeriesListenerHost" name="ISeriesListenerHost" policy="dynamic" target="(series.name=outputSeries)" unbind="resetSeriesListenerHost"/>
+   <reference bind="setUidGenerator" cardinality="1..1" interface="com.quantcomponents.core.remote.IUIDGenerator" name="IUIDGenerator" policy="static"/>
+   <property name="series.name" type="String" value="outputSeries"/>
+</scr:component>

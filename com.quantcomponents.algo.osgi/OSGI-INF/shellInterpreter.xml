@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.quantcomponents.algo.osgi.shellInterpreter">
+   <implementation class="com.quantcomponents.algo.osgi.internal.ShellInterpreter"/>
+   <property name="osgi.command.scope" type="String" value="quant"/>
+   <property name="osgi.command.function" type="String">
+executionservice
+tradingmanager
+   </property>
+   <service>
+      <provide interface="com.quantcomponents.algo.osgi.internal.ShellInterpreter"/>
+   </service>
+   <reference bind="setExecutionService" cardinality="1..1" interface="com.quantcomponents.algo.IExecutionService" name="IExecutionService" policy="static"/>
+   <reference bind="setTradingManager" cardinality="1..1" interface="com.quantcomponents.algo.IStockDatabaseTradingManager" name="IStockDatabaseTradingManager" policy="static"/>
+</scr:component>

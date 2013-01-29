@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" name="com.quantcomponents.series.jdbc.derby.container">
+   <implementation class="com.quantcomponents.series.jdbc.derby.DerbyStockDatabaseContainer"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.IStockDatabaseContainer"/>
+   </service>
+   <reference bind="setDataSourceFactory" cardinality="1..1" interface="org.osgi.service.jdbc.DataSourceFactory" name="DataSourceFactory" policy="static"/>
+</scr:component>
