@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Trading calendar enntity.
+ * Trading calendar entity.
  * It maps any date with an instance of {@link ITradingDay}, 
  * and provides period of validity, time zone, and a
  * readable name and description.
