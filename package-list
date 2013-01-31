@@ -1,0 +1,14 @@
+com.quantcomponents.algo
+com.quantcomponents.algo.ta
+com.quantcomponents.chart
+com.quantcomponents.chart.series
+com.quantcomponents.chart.series.scale
+com.quantcomponents.core.calendar
+com.quantcomponents.core.exceptions
+com.quantcomponents.core.model
+com.quantcomponents.core.model.beans
+com.quantcomponents.core.remote
+com.quantcomponents.core.series
+com.quantcomponents.core.utils
+com.quantcomponents.core.xml
+com.quantcomponents.marketdata
