@@ -1,5 +1,5 @@
 Beware:
-OSGi modules to auto-start:
+OSGi modules to auto-start in client-server configuration:
 
 QuantComponents (runlevel: 5)
 
