@@ -34,7 +34,7 @@ import com.quantcomponents.marketdata.osgi.IStockDatabaseHostLocal;
 
 public class MarketDataManagerHost implements IMarketDataManagerHost {
 	
-	private static class ServiceInfo {
+	protected static class ServiceInfo {
 		IStockDatabase stockDb;
 		ServiceHandle<IStockDatabaseHost> handle;
 	}
@@ -43,14 +43,14 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 	private static final Logger logger = Logger.getLogger(MarketDataManagerHost.class.getName());
 	private final Map<IStockDatabase, ServiceInfo> databaseInfoByStockDb = new ConcurrentHashMap<IStockDatabase, ServiceInfo>();
 	private final Map<ServiceHandle<IStockDatabaseHost>, ServiceInfo> databaseInfoByHandle = new ConcurrentHashMap<ServiceHandle<IStockDatabaseHost>, ServiceInfo>();
-	private volatile IMarketDataManager dataManagerService;
+	private volatile IMarketDataManager marketDataManager;
 	private volatile IStockDatabaseHostLocal stockDatabaseHost;
 	private volatile ITaskMonitorHost taskMonitorHost;
 	
 	public MarketDataManagerHost() {}
 
 	public MarketDataManagerHost(IMarketDataManager dataManagerService, IStockDatabaseHostLocal stockDatabaseHost, ITaskMonitorHost taskMonitorHost) {
-		this.dataManagerService = dataManagerService;
+		this.marketDataManager = dataManagerService;
 		this.stockDatabaseHost = stockDatabaseHost;
 		this.taskMonitorHost = taskMonitorHost;
 	}
@@ -65,7 +65,7 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 	}
 	
 	public void setDataManagerService(IMarketDataManager dataManagerService) {
-		this.dataManagerService = dataManagerService;
+		this.marketDataManager = dataManagerService;
 	}
 
 	public void setStockDatabaseHost(IStockDatabaseHostLocal stockDatabaseHost) {
@@ -84,11 +84,11 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 
 	@Override
 	public String getPrettyName() {
-		return dataManagerService.getPrettyName();
+		return getMarketDataManager().getPrettyName();
 	}
 
 	public List<IContract> searchContracts(IContract criteria, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException, RequestFailedException {
-		return dataManagerService.searchContracts(criteria, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
+		return getMarketDataManager().searchContracts(criteria, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 	@Override
 	public ServiceHandle<IStockDatabaseHost> findStockDatabase(IContract contract, DataType dataType, BarSize barSize, Boolean includeAfterHours) {
 		ServiceHandle<IStockDatabaseHost> serviceHandle = null;
-		IStockDatabase stockDatabase = dataManagerService.findStockDatabase(contract, dataType, barSize, includeAfterHours);
+		IStockDatabase stockDatabase = getMarketDataManager().findStockDatabase(contract, dataType, barSize, includeAfterHours);
 		if (stockDatabase != null) {
 			serviceHandle = publishStockDbHost(stockDatabase);
 		}
@@ -113,7 +113,7 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 	@Override
 	public ServiceHandle<IStockDatabaseHost> getStockDatabase(String ID) throws ConnectException, RequestFailedException {
 		ServiceHandle<IStockDatabaseHost> serviceHandle = null;
-		IStockDatabase stockDatabase = dataManagerService.getStockDatabase(ID);
+		IStockDatabase stockDatabase = getMarketDataManager().getStockDatabase(ID);
 		if (stockDatabase != null) {
 			serviceHandle = publishStockDbHost(stockDatabase);
 		}
@@ -122,7 +122,7 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 
 	@Override
 	public ServiceHandle<IStockDatabaseHost> createStockDatabase(IContract contract, DataType dataType, BarSize barSize, boolean includeAfterHours, TimeZone timeZone) {
-		IStockDatabase stockDb = dataManagerService.createStockDatabase(contract, dataType, barSize, includeAfterHours, timeZone);
+		IStockDatabase stockDb = getMarketDataManager().createStockDatabase(contract, dataType, barSize, includeAfterHours, timeZone);
 		return publishStockDbHost(stockDb);
 	}
 
@@ -137,37 +137,18 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 				throw new IllegalArgumentException("Handle refers to a stock database not managed: " + stockDbHostHandle);
 			}
 		}
-		dataManagerService.removeStockDatabase(serviceInfo.stockDb);
+		getMarketDataManager().removeStockDatabase(serviceInfo.stockDb);
 	}
 
 	@Override
 	public void fillHistoricalData(ServiceHandle<IStockDatabaseHost> stockDbHostHandle, Date startDate, Date endDate, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException,
 			RequestFailedException {
 		ServiceInfo serviceInfo = retrieveServiceInfo(stockDbHostHandle);
-		dataManagerService.fillHistoricalData(serviceInfo.stockDb, startDate, endDate, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
+		getMarketDataManager().fillHistoricalData(serviceInfo.stockDb, startDate, endDate, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
 	}
 
-	@Override
-	public void startRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHostHandle, boolean fillHistoricalGap, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException,
-			RequestFailedException {
-		ServiceInfo serviceInfo = retrieveServiceInfo(stockDbHostHandle);
-		dataManagerService.startRealtimeUpdate(serviceInfo.stockDb, fillHistoricalGap, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
-	}
-
-	@Override
-	public void stopRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHostHandle) throws ConnectException, RequestFailedException {
-		ServiceInfo serviceInfo = retrieveServiceInfo(stockDbHostHandle);
-		dataManagerService.stopRealtimeUpdate(serviceInfo.stockDb);
-	}
-
-	@Override
-	public boolean isRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHostHandle) throws ConnectException, RequestFailedException {
-		ServiceInfo serviceInfo = retrieveServiceInfo(stockDbHostHandle);
-		return dataManagerService.isRealtimeUpdate(serviceInfo.stockDb);
-	}
-	
 	private void publishAllStockDbHosts() {
-		Collection<IStockDatabase> allStockDb = dataManagerService.allStockDatabases();
+		Collection<IStockDatabase> allStockDb = getMarketDataManager().allStockDatabases();
 		for (IStockDatabase stockDb : allStockDb) {
 			publishStockDbHost(stockDb);
 		}
@@ -185,7 +166,7 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 		return serviceInfo.handle;
 	}
 	
-	private ServiceInfo retrieveServiceInfo(ServiceHandle<IStockDatabaseHost> stockDbHostHandle) {
+	protected ServiceInfo retrieveServiceInfo(ServiceHandle<IStockDatabaseHost> stockDbHostHandle) {
 		ServiceInfo serviceInfo = databaseInfoByHandle.get(stockDbHostHandle);
 		if (serviceInfo == null) {
 			throw new IllegalArgumentException("Handle refers to a stock database not managed: " + stockDbHostHandle);
@@ -193,6 +174,10 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 		return serviceInfo;
 	}
 
+	protected IMarketDataManager getMarketDataManager() {
+		return marketDataManager;
+	}
+	
 	@Override
 	public int numberOfStockDatabases() {
 		return databaseInfoByHandle.size();

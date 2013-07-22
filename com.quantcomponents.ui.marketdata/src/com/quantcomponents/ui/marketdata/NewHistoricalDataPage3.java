@@ -36,6 +36,7 @@ import com.quantcomponents.core.model.UnitOfTime;
 public class NewHistoricalDataPage3 extends WizardPage {
 	private static final Currency DOLLAR = Currency.getInstance("USD");
 
+	private final boolean realTimeUpdateAvailable;
 	private PeriodCombo periodEdit;
 	private Combo dataTypeEdit;
 	private Combo barSizeEdit;
@@ -53,8 +54,9 @@ public class NewHistoricalDataPage3 extends WizardPage {
 
 	private TimeZone contractTimeZone;
 
-	protected NewHistoricalDataPage3() {
+	protected NewHistoricalDataPage3(boolean realTimeUpdateAvailable) {
 		super("Download historical data");
+		this.realTimeUpdateAvailable = realTimeUpdateAvailable; 
 	}
 
 	private void initialize() {
@@ -116,6 +118,7 @@ public class NewHistoricalDataPage3 extends WizardPage {
 		realtimeButton = new Button(dataSpecContainer, SWT.CHECK);
 		realtimeButton.setText("Realtime update");
 		realtimeButton.setSelection(false);
+		realtimeButton.setEnabled(realTimeUpdateAvailable);
 		
 		endDateLabel = new Label(dataSpecContainer, SWT.NULL);
 		endDateLabel.setText("End Date");
@@ -149,33 +152,35 @@ public class NewHistoricalDataPage3 extends WizardPage {
 				endTimeEdit.setTime(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
 			}});
 		
-		realtimeButton.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean enableEndDateTime = !realtimeButton.getSelection();
-				endDateLabel.setEnabled(enableEndDateTime);
-				endDateEdit.setEnabled(enableEndDateTime);
-				endTimeLabel.setEnabled(enableEndDateTime);
-				endTimeEdit.setEnabled(enableEndDateTime);
-				timeZoneLabel.setEnabled(enableEndDateTime);
-				timeZoneEdit.setEnabled(enableEndDateTime);
-				midnightButton.setEnabled(enableEndDateTime);
-				nowButton.setEnabled(enableEndDateTime);
-			}
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			});
-		
-		timeZoneLabel = new Label(dataSpecContainer, SWT.NULL);
-		timeZoneLabel.setText("Time zone");
-		
-		timeZoneEdit = new Text(dataSpecContainer, SWT.NULL);
-		GridData timeZoneEditLayoutData = new GridData(GridData.FILL_HORIZONTAL);
-		timeZoneEdit.setLayoutData(timeZoneEditLayoutData);
-		
-		initialize();
-		
-		setControl(rootContainer);
+		if (realTimeUpdateAvailable) {
+			realtimeButton.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					boolean enableEndDateTime = !realtimeButton.getSelection();
+					endDateLabel.setEnabled(enableEndDateTime);
+					endDateEdit.setEnabled(enableEndDateTime);
+					endTimeLabel.setEnabled(enableEndDateTime);
+					endTimeEdit.setEnabled(enableEndDateTime);
+					timeZoneLabel.setEnabled(enableEndDateTime);
+					timeZoneEdit.setEnabled(enableEndDateTime);
+					midnightButton.setEnabled(enableEndDateTime);
+					nowButton.setEnabled(enableEndDateTime);
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+				});
+			
+			timeZoneLabel = new Label(dataSpecContainer, SWT.NULL);
+			timeZoneLabel.setText("Time zone");
+			
+			timeZoneEdit = new Text(dataSpecContainer, SWT.NULL);
+			GridData timeZoneEditLayoutData = new GridData(GridData.FILL_HORIZONTAL);
+			timeZoneEdit.setLayoutData(timeZoneEditLayoutData);
+			
+			initialize();
+			
+			setControl(rootContainer);
+		}
 	}
 	
 	public void setSelectedContract(IContract selectedContract) {

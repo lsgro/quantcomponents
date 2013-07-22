@@ -56,13 +56,13 @@ import com.quantcomponents.core.model.ITaskMonitor;
 import com.quantcomponents.core.model.TimePeriod;
 import com.quantcomponents.core.model.beans.ContractBean;
 import com.quantcomponents.core.model.beans.ImmutableContractBean;
-import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IOHLCPoint;
+import com.quantcomponents.marketdata.IRealTimeMarketDataProvider;
 import com.quantcomponents.marketdata.ITickPoint;
 import com.quantcomponents.marketdata.OHLCPoint;
 import com.quantcomponents.marketdata.TickPoint;
 
-public class IBAdapter implements IMarketDataProvider, IExecutionService {
+public class IBAdapter implements IRealTimeMarketDataProvider, IExecutionService {
 	private static final Logger logger = Logger.getLogger(IBAdapter.class.getName());
 	
 	public static final String[] MKT_DATA_LINES = { "Less than 499","500 - 749","750 - 999","more than 999" };

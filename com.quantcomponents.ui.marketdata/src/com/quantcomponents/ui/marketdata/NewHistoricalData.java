@@ -35,6 +35,7 @@ import com.quantcomponents.core.model.ITaskMonitor;
 import com.quantcomponents.core.model.TimePeriod;
 import com.quantcomponents.core.model.beans.ContractBean;
 import com.quantcomponents.core.utils.LangUtils;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
 import com.quantcomponents.marketdata.IStockDatabase;
 import com.quantcomponents.ui.core.TaskMonitorAdapter;
 
@@ -69,8 +70,12 @@ public class NewHistoricalData extends Wizard implements IPageChangingListener {
 		addPage(page1);
 		page2 = new NewHistoricalDataPage2();
 		addPage(page2);
-		page3 = new NewHistoricalDataPage3();
+		page3 = new NewHistoricalDataPage3(isRealTimeUpdateAvailable());
 		addPage(page3);
+	}
+	
+	private boolean isRealTimeUpdateAvailable() {
+		return marketDataManager instanceof IRealTimeMarketDataManager;
 	}
 
 	private List<IContract> searchContracts() {
@@ -180,12 +185,13 @@ public class NewHistoricalData extends Wizard implements IPageChangingListener {
 	private void startAutoUpdate(final IStockDatabase stockDatabase) throws InvocationTargetException, InterruptedException {
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 		dialog.setCancelable(true);
+		final IRealTimeMarketDataManager realTimeMarketDataManager = (IRealTimeMarketDataManager) marketDataManager;
 		dialog.run(true, true, new IRunnableWithProgress() {
 			@Override
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				try {
 					ITaskMonitor taskMonitor = new TaskMonitorAdapter(monitor, "Starting auto-update...");
-					marketDataManager.startRealtimeUpdate(stockDatabase, true, taskMonitor);
+					realTimeMarketDataManager.startRealtimeUpdate(stockDatabase, true, taskMonitor);
 				} catch (Exception e) {
 					throw new InvocationTargetException(e);
 				} 

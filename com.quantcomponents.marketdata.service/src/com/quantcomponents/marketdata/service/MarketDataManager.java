@@ -20,9 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,13 +34,10 @@ import com.quantcomponents.core.model.ITaskMonitor;
 import com.quantcomponents.marketdata.IMarketDataManager;
 import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IMutableOHLCTimeSeries;
-import com.quantcomponents.marketdata.IMutableTickTimeSeries;
 import com.quantcomponents.marketdata.IOHLCPoint;
 import com.quantcomponents.marketdata.IStockDatabase;
 import com.quantcomponents.marketdata.IStockDatabaseContainer;
-import com.quantcomponents.marketdata.ITickPoint;
 import com.quantcomponents.marketdata.StockDatabase;
-import com.quantcomponents.marketdata.IMarketDataProvider.ITickListener;
 
 public class MarketDataManager implements IMarketDataManager {
 	/**
@@ -107,67 +102,10 @@ public class MarketDataManager implements IMarketDataManager {
 		}
 	}
 	
-	/**
-	 * Fills a mutable time series with realtime data
-	 */
-	public class RealtimeDataFeeder {
-		private final IMarketDataProvider provider;
-		private boolean autoUpdate;
-		private final IMutableTickTimeSeries timeSeries;
-		private final DataType dataType;
-		private ITickListener listener;
-		
-		private class TickListener implements IMarketDataProvider.ITickListener {
-			@Override
-			public void onTick(ITickPoint tick) {
-				if (!isRunning()) {
-					logger.log(Level.SEVERE, "Data received with feeder stopped");
-					return;
-				}
-				if (!dataType.includes(tick.getDataType())) {
-					return;
-				}
-				ITickPoint lastExistingTick = (ITickPoint) timeSeries.getLast();
-				if (lastExistingTick != null && tick.getIndex().before(lastExistingTick.getIndex())) {
-					logger.log(Level.WARNING, "Received old tick: " + tick.getIndex() + "; last available: " + lastExistingTick.getIndex());
-				} else {
-					timeSeries.addLast(tick);
-				}
-			}
-		}
-		
-		public RealtimeDataFeeder(IMarketDataProvider provider, IMutableTickTimeSeries timeSeries, DataType dataType) {
-			this.provider = provider;
-			this.timeSeries = timeSeries;
-			this.dataType = dataType;
-		}
-
-		public void start() throws ConnectException, RequestFailedException {
-			if (!autoUpdate) {
-				autoUpdate = true;
-				listener = new TickListener();
-				provider.startTicks(timeSeries.getContract(), listener);
-			}
-		}
-
-		public void stop() throws ConnectException {
-			if (autoUpdate) {
-				autoUpdate = false;
-				provider.stopTicks(timeSeries.getContract(), listener);
-				listener = null;
-			}
-		}
-
-		public boolean isRunning() {
-			return autoUpdate;
-		}
-	}
-
 	private static final Logger logger = Logger.getLogger(MarketDataManager.class.getName());
-	private final Map<IStockDatabase, RealtimeDataFeeder> stockDbFeeders = new ConcurrentHashMap<IStockDatabase, RealtimeDataFeeder>();
 	private volatile IStockDatabaseContainer stockDatabaseContainer;
-	private volatile IMarketDataProvider marketDataProvider;
 	private volatile String name;
+	private volatile IMarketDataProvider marketDataProvider;
 	
 	public MarketDataManager() {
 		String hostname;
@@ -177,13 +115,13 @@ public class MarketDataManager implements IMarketDataManager {
 			logger.log(Level.SEVERE, "Cound not find hostname", e);
 			hostname = "localhost";
 		}
-		name = "MarketDataManager@" + hostname;
+		setName("MarketDataManager@" + hostname);
 	}
 
 	public void setMarketDataProvider(IMarketDataProvider marketDataProvider) {
 		this.marketDataProvider = marketDataProvider;
 		if (marketDataProvider != null) {
-			name += "[" + marketDataProvider.toString() + "]";
+			setName(getName() + "[" + marketDataProvider.toString() + "]");
 		}
 	}
 	
@@ -193,23 +131,23 @@ public class MarketDataManager implements IMarketDataManager {
 
 	@Override
 	public String getPrettyName() {
-		return name;
+		return getName();
 	}
 	
 	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		return marketDataProvider.searchContracts(criteria, taskMonitor);
+		return getMarketDataProvider().searchContracts(criteria, taskMonitor);
 	}
 
 	@Override
 	public Collection<IStockDatabase> allStockDatabases() {
-		return new ArrayList<IStockDatabase>(stockDatabaseContainer.allStockDatabases());
+		return new ArrayList<IStockDatabase>(getStockDatabaseContainer().allStockDatabases());
 	}
 
 
 	@Override
 	public IStockDatabase findStockDatabase(IContract contract, DataType dataType, BarSize barSize, Boolean includeAfterHours) {
-		for (IStockDatabase stockDb : stockDatabaseContainer.allStockDatabases()) {
+		for (IStockDatabase stockDb : getStockDatabaseContainer().allStockDatabases()) {
 			if (stockDatabaseQualifies(stockDb, contract, dataType, barSize, includeAfterHours)) {
 				return stockDb;
 			}
@@ -219,7 +157,7 @@ public class MarketDataManager implements IMarketDataManager {
 
 	@Override
 	public IStockDatabase getStockDatabase(String ID) {
-		return stockDatabaseContainer.getStockDatabase(ID);
+		return getStockDatabaseContainer().getStockDatabase(ID);
 	}
 
 	@Override
@@ -231,68 +169,23 @@ public class MarketDataManager implements IMarketDataManager {
 	@Override
 	public IStockDatabase createStockDatabase(IContract contract, DataType dataType, BarSize barSize, boolean includeAfterHours, TimeZone timeZone) {
 		IStockDatabase stockDb = new StockDatabase(contract, dataType, barSize, includeAfterHours, timeZone);
-		stockDatabaseContainer.addStockDatabase(stockDb);
+		getStockDatabaseContainer().addStockDatabase(stockDb);
 		return stockDb;
 	}
 
 	@Override
 	public void removeStockDatabase(IStockDatabase stockDb) throws ConnectException, RequestFailedException {
-		RealtimeDataFeeder feeder = stockDbFeeders.remove(stockDb);
-		if (feeder != null) {
-			feeder.stop();
-		}
-		stockDatabaseContainer.removeStockDatabase(stockDb);
+		getStockDatabaseContainer().removeStockDatabase(stockDb);
 	}
 
 	@Override
 	public void fillHistoricalData(IStockDatabase stockDb, Date startDate, Date endDate, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		new HistoricalDataFeeder(marketDataProvider, stockDb.getOHLCTimeSeries()).fillHistoricalData(startDate, endDate, taskMonitor);
-	}
-
-	@Override
-	public void startRealtimeUpdate(IStockDatabase stockDb, boolean fillHistoricalGap, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		RealtimeDataFeeder realtimeFeeder = null;
-		synchronized (stockDb) {
-			realtimeFeeder = stockDbFeeders.get(stockDb);
-			if (realtimeFeeder == null) {
-				realtimeFeeder = new RealtimeDataFeeder(marketDataProvider, stockDb.getTickTimeSeries(), stockDb.getDataType());
-				stockDbFeeders.put(stockDb, realtimeFeeder);
-			} else {
-				if (realtimeFeeder.isRunning()) {
-					return;
-				}
-			}
-		}
-		if (fillHistoricalGap) {
-			if (stockDb.getVirtualTimeSeries().getLast() != null) {
-				Date lastDataIndex = stockDb.getVirtualTimeSeries().getLast().getIndex();
-				fillHistoricalData(stockDb, lastDataIndex, new Date(), taskMonitor);
-			}
-		}
-		realtimeFeeder.start();
-	}
-
-	@Override
-	public void stopRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException {
-		RealtimeDataFeeder realtimeFeeder = stockDbFeeders.get(stockDb);
-		if (realtimeFeeder == null) {
-			throw new IllegalArgumentException("Stock DB " + stockDb + " has no realtime feeding");
-		}
-		realtimeFeeder.stop();
-	}
-
-	@Override
-	public boolean isRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException {
-		RealtimeDataFeeder realtimeFeeder = stockDbFeeders.get(stockDb);
-		if (realtimeFeeder == null) {
-			return false;
-		}
-		return realtimeFeeder.isRunning();
+		new HistoricalDataFeeder(getMarketDataProvider(), stockDb.getOHLCTimeSeries()).fillHistoricalData(startDate, endDate, taskMonitor);
 	}
 
 	@Override
 	public int numberOfStockDatabases() {
-		return stockDatabaseContainer.size();
+		return getStockDatabaseContainer().size();
 	}
 
 	private static boolean stockDatabaseQualifies(IStockDatabase stockDb, IContract contract, DataType dataType, BarSize barSize, Boolean includeAfterHours) {
@@ -309,5 +202,21 @@ public class MarketDataManager implements IMarketDataManager {
 			return false;
 		}
 		return true;
+	}
+
+	protected IStockDatabaseContainer getStockDatabaseContainer() {
+		return stockDatabaseContainer;
+	}
+	
+	protected void setName(String name) {
+		this.name = name;
+	}
+
+	protected String getName() {
+		return name;
+	}
+
+	protected IMarketDataProvider getMarketDataProvider() {
+		return marketDataProvider;
 	}
 }

@@ -20,6 +20,7 @@ import com.quantcomponents.core.model.IPrettyNamed;
 import com.quantcomponents.marketdata.IMutableOHLCTimeSeries;
 import com.quantcomponents.marketdata.IMutableTickTimeSeries;
 import com.quantcomponents.marketdata.IOHLCTimeSeries;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
 import com.quantcomponents.marketdata.IStockDatabase;
 import com.quantcomponents.marketdata.StockDatabase;
 
@@ -45,7 +46,10 @@ public class StockDatabasePresentationWrapper implements IStockDatabase, IPretty
 	
 	public boolean isRealtimeUpdate() {
 		try {
-			return getParent().isRealtimeUpdate(this);
+			if (getParent() instanceof IRealTimeMarketDataManager)
+				return ((IRealTimeMarketDataManager) getParent()).isRealtimeUpdate(this);
+			else
+				return false;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error while querying stock DB auto-update status: " + this.getPrettyName(), e);
 			return false;

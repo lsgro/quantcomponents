@@ -37,14 +37,18 @@ import com.quantcomponents.ui.core.IMonitorableContainerListener;
 import com.quantcomponents.ui.core.IMutableMonitorableContainer;
 
 public class MarketDataManagerPresentationWrapper implements IMarketDataManager, IPrettyNamed, IMonitorableContainer<StockDatabasePresentationWrapper> {
-	private final IMarketDataManager manager;
+	private final IMarketDataManager marketDataManager;
 	private final IMutableMonitorableContainer<IMarketDataManager, MarketDataManagerPresentationWrapper> parent;
 	private final Map<String, StockDatabasePresentationWrapper> wrappersByID = new ConcurrentHashMap<String, StockDatabasePresentationWrapper>();
 	private final Set<IMonitorableContainerListener<StockDatabasePresentationWrapper>> listeners = new CopyOnWriteArraySet<IMonitorableContainerListener<StockDatabasePresentationWrapper>>(); 
 	
 	public MarketDataManagerPresentationWrapper(IMarketDataManager manager, IMutableMonitorableContainer<IMarketDataManager, MarketDataManagerPresentationWrapper>  parent) {
-		this.manager = manager;
+		this.marketDataManager = manager;
 		this.parent = parent;
+	}
+	
+	public IMarketDataManager getMarketDataManager() {
+		return marketDataManager;
 	}
 	
 	public IMutableMonitorableContainer<IMarketDataManager, MarketDataManagerPresentationWrapper> getParent() {
@@ -53,11 +57,11 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 	
 	@Override
 	public String getPrettyName() {
-		return manager.getPrettyName();
+		return getMarketDataManager().getPrettyName();
 	}
 	
 	public void synchronizeStockDatabases() {
-		Collection<IStockDatabase> stockDatabases = manager.allStockDatabases();
+		Collection<IStockDatabase> stockDatabases = getMarketDataManager().allStockDatabases();
 		Set<String> stockDbNames = new HashSet<String>();
 		for (IStockDatabase stockDb : stockDatabases) {
 			String stockDbID = stockDb.getPersistentID();
@@ -83,7 +87,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 
 	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		return manager.searchContracts(criteria, taskMonitor);
+		return getMarketDataManager().searchContracts(criteria, taskMonitor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -94,7 +98,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 
 	@Override
 	public StockDatabasePresentationWrapper findStockDatabase(IContract contract, DataType dataType, BarSize barSize, Boolean includeAfterHours) {
-		IStockDatabase stockDatabase = manager.findStockDatabase(contract, dataType, barSize, includeAfterHours);
+		IStockDatabase stockDatabase = getMarketDataManager().findStockDatabase(contract, dataType, barSize, includeAfterHours);
 		if (stockDatabase != null) {
 			return getOrCreateWrapper(stockDatabase);
 		} else {
@@ -104,7 +108,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 	
 	@Override
 	public StockDatabasePresentationWrapper createStockDatabase(IContract contract, DataType dataType, BarSize barSize, boolean includeAfterHours, TimeZone timeZone) {
-		IStockDatabase stockDatabase = manager.createStockDatabase(contract, dataType, barSize, includeAfterHours, timeZone);
+		IStockDatabase stockDatabase = getMarketDataManager().createStockDatabase(contract, dataType, barSize, includeAfterHours, timeZone);
 		StockDatabasePresentationWrapper wrapper = getOrCreateWrapper(stockDatabase);
 		for (IMonitorableContainerListener<StockDatabasePresentationWrapper> listener : listeners) {
 			listener.onElementAdded(wrapper);
@@ -122,7 +126,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 				listener.onElementRemoved(wrapper);
 			}
 		}
-		manager.removeStockDatabase(stockDb);
+		getMarketDataManager().removeStockDatabase(stockDb);
 	}
 
 	@Override
@@ -131,32 +135,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 		if (stockDb instanceof StockDatabasePresentationWrapper) {
 			stockDb = ((StockDatabasePresentationWrapper) stockDb).getInner();
 		}
-		manager.fillHistoricalData(stockDb, startDate, endDate, taskMonitor);
-	}
-
-	@Override
-	public void startRealtimeUpdate(IStockDatabase stockDb, boolean fillHistoricalGap, ITaskMonitor taskMonitor) throws ConnectException,
-			RequestFailedException {
-		if (stockDb instanceof StockDatabasePresentationWrapper) {
-			stockDb = ((StockDatabasePresentationWrapper) stockDb).getInner();
-		}
-		manager.startRealtimeUpdate(stockDb, fillHistoricalGap, taskMonitor);
-	}
-
-	@Override
-	public void stopRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException {
-		if (stockDb instanceof StockDatabasePresentationWrapper) {
-			stockDb = ((StockDatabasePresentationWrapper) stockDb).getInner();
-		}
-		manager.stopRealtimeUpdate(stockDb);
-	}
-
-	@Override
-	public boolean isRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException {
-		if (stockDb instanceof StockDatabasePresentationWrapper) {
-			stockDb = ((StockDatabasePresentationWrapper) stockDb).getInner();
-		}
-		return manager.isRealtimeUpdate(stockDb);
+		getMarketDataManager().fillHistoricalData(stockDb, startDate, endDate, taskMonitor);
 	}
 
 	@Override
@@ -183,7 +162,7 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 
 	@Override
 	public StockDatabasePresentationWrapper getStockDatabase(String ID) {
-		return getOrCreateWrapper(manager.getStockDatabase(ID));
+		return getOrCreateWrapper(getMarketDataManager().getStockDatabase(ID));
 	}
 
 	@Override

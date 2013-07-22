@@ -83,34 +83,4 @@ public interface IMarketDataProvider {
 	 */
 	List<IOHLCPoint> historicalBars(IContract contract, Date startDateTime, Date endDateTime,
 			BarSize barSize, DataType dataType, boolean includeAfterHours, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException;
-	/**
-	 * Starts the collection of realtime price bars
-	 * @param contract the contract 
-	 * @param barSize the bar size of the data requested
-	 * @param dataType the data type requested 
-	 * @param includeAfterHours true if after hours trading data is requested, false otherwise
-	 * @param listener the price bar listener to be notified for each bar
-	 */
-	void startRealTimeBars(IContract contract, BarSize barSize, DataType dataType, boolean includeAfterHours, IRealTimeDataListener listener) throws ConnectException, RequestFailedException;
-	/**
-	 * Stops the collection of realtime price bars
-	 * @param contract the contract 
-	 * @param barSize the bar size of the data requested
-	 * @param dataType the data type requested 
-	 * @param includeAfterHours true if after hours trading data is requested, false otherwise
-	 * @param listener the listener that must stop being notified for each bar
-	 */
-	void stopRealTimeBars(IContract contract, BarSize barSize, DataType dataType, boolean includeAfterHours, IRealTimeDataListener listener) throws ConnectException;
-	/**
-	 * Start the collection of realtime price ticks
-	 * @param contract the contract 
-	 * @param listener the price tick listener to be notified for each tick
-	 */
-	void startTicks(IContract contract, ITickListener listener) throws ConnectException, RequestFailedException;
-	/**
-	 * Stop the collection of realtime price ticks
-	 * @param contract the contract
-	 * @param listener the listener that must stop being notified for each tick
-	 */
-	void stopTicks(IContract contract, ITickListener listener) throws ConnectException;
 }

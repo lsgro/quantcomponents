@@ -29,10 +29,10 @@ import com.quantcomponents.core.model.BarSize;
 import com.quantcomponents.core.model.DataType;
 import com.quantcomponents.core.model.IContract;
 import com.quantcomponents.core.model.ITaskMonitor;
-import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IOHLCPoint;
+import com.quantcomponents.marketdata.IRealTimeMarketDataProvider;
 
-public class IBAdapterComponent implements IMarketDataProvider, IExecutionService {
+public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecutionService {
 	private static final Logger logger = Logger.getLogger(IBAdapter.class.getName());
 	public static final String HOST_KEY = "host";
 	public static final String PORT_KEY = "port";

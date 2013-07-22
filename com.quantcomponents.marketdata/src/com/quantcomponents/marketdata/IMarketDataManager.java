@@ -82,21 +82,4 @@ public interface IMarketDataManager extends ISeriesProvider<Date, Double>, IPret
 	 * @param taskMonitor task monitor to control the task
 	 */
 	void fillHistoricalData(IStockDatabase stockDb, Date startDate, Date endDate, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException;
-	/**
-	 * Starts the realtime update of prices from the market on a stock database
-	 * @param stockDb the stock database to be start updating
-	 * @param fillHistoricalGap true if the gap between the last market data and the current beginning of realtime data must be filled with historical data, false otherwise
-	 * @param taskMonitor a task monitor to control the task
-	 */
-	void startRealtimeUpdate(IStockDatabase stockDb, boolean fillHistoricalGap, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException;
-	/**
-	 * Sto the realtime update of prices
-	 * @param stockDb stock database to stop updating
-	 */
-	void stopRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException;
-	/**
-	 * Return true if the stock database is currently being updated with realtime market data, false otherwise
-	 * @param stockDb the stock database to query
-	 */
-	boolean isRealtimeUpdate(IStockDatabase stockDb) throws ConnectException, RequestFailedException;
 }

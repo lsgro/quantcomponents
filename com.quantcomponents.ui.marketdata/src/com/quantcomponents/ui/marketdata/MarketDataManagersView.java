@@ -52,6 +52,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
 
 import com.quantcomponents.core.utils.LangUtils;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
 import com.quantcomponents.ui.core.IMonitorableContainer;
 import com.quantcomponents.ui.core.IMonitorableContainerListener;
 import com.quantcomponents.ui.core.TaskMonitorAdapter;
@@ -124,7 +125,8 @@ public class MarketDataManagersView extends ViewPart {
 							@Override
 							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 								try {
-									selectedMarketDataManager.startRealtimeUpdate(selectedStockDatabase, true, new TaskMonitorAdapter(monitor, "Retrieving historical data"));
+									IRealTimeMarketDataManager realTimeMarketDataManager = (IRealTimeMarketDataManager) selectedMarketDataManager;
+									realTimeMarketDataManager.startRealtimeUpdate(selectedStockDatabase, true, new TaskMonitorAdapter(monitor, "Retrieving historical data"));
 								} catch (Exception e) {
 									MessageDialog.openError(parent.getShell(), "Error", "Error while retrieving historical data: " + LangUtils.exceptionMessage(e));
 								}
@@ -139,6 +141,8 @@ public class MarketDataManagersView extends ViewPart {
 					MessageDialog.openError(parent.getShell(), "Error", "A problem occurred while starting auto-update: " + LangUtils.exceptionMessage(e));
 				} catch (InterruptedException e) {
 					MessageDialog.openError(parent.getShell(), "Error", "Task interrupted while starting auto-update: " + LangUtils.exceptionMessage(e));
+				} catch (ClassCastException e) {
+					MessageDialog.openError(parent.getShell(), "Error", "Market data source does not support real-time update");
 				} 
 			}
 		}
@@ -149,10 +153,13 @@ public class MarketDataManagersView extends ViewPart {
 			if (selectedMarketDataManager != null && multipleStockDatabaseSelection.size() > 0) {
 				for (StockDatabasePresentationWrapper selectedStockDatabase : multipleStockDatabaseSelection) {
 					try {
-						selectedMarketDataManager.stopRealtimeUpdate(selectedStockDatabase);
+						IRealTimeMarketDataManager realTimeMarketDataManager = (IRealTimeMarketDataManager) selectedMarketDataManager;
+						realTimeMarketDataManager.stopRealtimeUpdate(selectedStockDatabase);
+					} catch (ClassCastException e) {
+						MessageDialog.openError(parent.getShell(), "Error", "Market data source does not support real-time update");
 					} catch (Exception e) {
 						MessageDialog.openError(parent.getShell(), "Error", "A problem occurred while stopping auto-update: " + LangUtils.exceptionMessage(e));
-					}
+					} 
 					IBaseLabelProvider labelDecorator = PlatformUI.getWorkbench().getDecoratorManager().getBaseLabelProvider(AutoUpdateIconDecorator.DECORATOR_ID);
 					if (labelDecorator != null) { // it is enabled
 						AutoUpdateIconDecorator autoUpdateIconDecorator = (AutoUpdateIconDecorator) labelDecorator;
@@ -254,14 +261,18 @@ public class MarketDataManagersView extends ViewPart {
 						openViewAction.setEnabled(false);
 						addStockDatabaseAction.setEnabled(true);
 						removeStockDatabaseAction.setEnabled(false);
-						startAutoUpdateAction.setEnabled(false);
-						stopAutoUpdateAction.setEnabled(false);
+						if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
+							startAutoUpdateAction.setEnabled(false);
+							stopAutoUpdateAction.setEnabled(false);
+						}
 					} else if (o instanceof StockDatabasePresentationWrapper) {
 						openViewAction.setEnabled(true);
 						addStockDatabaseAction.setEnabled(true);
 						removeStockDatabaseAction.setEnabled(true);
-						startAutoUpdateAction.setEnabled(true);
-						stopAutoUpdateAction.setEnabled(true);
+						if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
+							startAutoUpdateAction.setEnabled(false);
+							stopAutoUpdateAction.setEnabled(false);
+						}
 						if (structuredSelection.size() > 0) {
 							Iterator<?> iterator = structuredSelection.iterator();
 							while (iterator.hasNext()) {
@@ -328,8 +339,10 @@ public class MarketDataManagersView extends ViewPart {
 		if (multipleStockDatabaseSelection.size() > 0) {
 			menuMgr.add(openViewAction);
 			menuMgr.add(removeStockDatabaseAction);
-			menuMgr.add(startAutoUpdateAction);
-			menuMgr.add(stopAutoUpdateAction);
+			if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
+				startAutoUpdateAction.setEnabled(false);
+				stopAutoUpdateAction.setEnabled(false);
+			}
 		}
 		if (selectedMarketDataManager != null) {
 			menuMgr.add(addStockDatabaseAction);

@@ -18,13 +18,13 @@ import com.quantcomponents.core.model.BarSize;
 import com.quantcomponents.core.model.DataType;
 import com.quantcomponents.core.model.IContract;
 import com.quantcomponents.core.model.ITaskMonitor;
-import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IOHLCPoint;
+import com.quantcomponents.marketdata.IRealTimeMarketDataProvider;
 
-public class MarketDataProviderShellProxy implements IMarketDataProvider {
-	private final IMarketDataProvider service;
+public class MarketDataProviderShellProxy implements IRealTimeMarketDataProvider {
+	private final IRealTimeMarketDataProvider service;
 
-	public MarketDataProviderShellProxy(IMarketDataProvider service) {
+	public MarketDataProviderShellProxy(IRealTimeMarketDataProvider service) {
 		this.service = service;
 	}
 

@@ -32,7 +32,4 @@ public interface IMarketDataManagerHost extends IPrettyNamed {
 	ServiceHandle<IStockDatabaseHost> createStockDatabase(IContract contract, DataType dataType, BarSize barSize, boolean includeAfterHours, TimeZone timeZone);
 	void removeStockDatabase(ServiceHandle<IStockDatabaseHost> stockDbHandle) throws ConnectException, RequestFailedException;
 	void fillHistoricalData(ServiceHandle<IStockDatabaseHost> stockDbHandle, Date startDate, Date endDate, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException, RequestFailedException;
-	void startRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHandle, boolean fillHistoricalGap, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException, RequestFailedException;
-	void stopRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHandle) throws ConnectException, RequestFailedException;
-	boolean isRealtimeUpdate(ServiceHandle<IStockDatabaseHost> stockDbHandle) throws ConnectException, RequestFailedException;
 }
