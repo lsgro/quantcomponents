@@ -137,6 +137,7 @@ public class TradingAgentBindingDialog extends Dialog {
 				return;
 			}
 			inputStockDatabasesByName.put(inputName, stockDatabaseWrapper.getInner());
+			row++;
 		}
 		name = nameEdit.getText();
 	}
