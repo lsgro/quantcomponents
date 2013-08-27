@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="require" deactivate="deactivate" name="com.quantcomponents.ib.adapter">
+   <implementation class="com.quantcomponents.ib.IBAdapterComponent"/>
+   <service>
+      <provide interface="com.quantcomponents.marketdata.IMarketDataProvider"/>
+      <provide interface="com.quantcomponents.algo.IExecutionService"/>
+   </service>
+</scr:component>
