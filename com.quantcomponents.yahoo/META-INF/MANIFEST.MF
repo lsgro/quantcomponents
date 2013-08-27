@@ -7,4 +7,5 @@ Bundle-Vendor: quantcomponents.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.quantcomponents.core.exceptions,
  com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
  com.quantcomponents.marketdata
