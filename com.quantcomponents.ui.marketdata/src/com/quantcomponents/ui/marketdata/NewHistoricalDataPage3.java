@@ -169,18 +169,18 @@ public class NewHistoricalDataPage3 extends WizardPage {
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {}
 				});
-			
-			timeZoneLabel = new Label(dataSpecContainer, SWT.NULL);
-			timeZoneLabel.setText("Time zone");
-			
-			timeZoneEdit = new Text(dataSpecContainer, SWT.NULL);
-			GridData timeZoneEditLayoutData = new GridData(GridData.FILL_HORIZONTAL);
-			timeZoneEdit.setLayoutData(timeZoneEditLayoutData);
-			
-			initialize();
-			
-			setControl(rootContainer);
 		}
+		
+		timeZoneLabel = new Label(dataSpecContainer, SWT.NULL);
+		timeZoneLabel.setText("Time zone");
+		
+		timeZoneEdit = new Text(dataSpecContainer, SWT.NULL);
+		GridData timeZoneEditLayoutData = new GridData(GridData.FILL_HORIZONTAL);
+		timeZoneEdit.setLayoutData(timeZoneEditLayoutData);
+		
+		initialize();
+		
+		setControl(rootContainer);
 	}
 	
 	public void setSelectedContract(IContract selectedContract) {

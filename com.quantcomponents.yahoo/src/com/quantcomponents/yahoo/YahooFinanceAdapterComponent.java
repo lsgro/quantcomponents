@@ -1,13 +1,17 @@
 package com.quantcomponents.yahoo;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.ConnectException;
-import java.net.Socket;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 import com.quantcomponents.core.exceptions.RequestFailedException;
 import com.quantcomponents.core.model.BarSize;
@@ -21,9 +25,7 @@ import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IOHLCPoint;
 
 public class YahooFinanceAdapterComponent implements IMarketDataProvider {
-	private static final String YAHOO_TICKER_QUERY_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc";
-	private static final String YAHOO_TICKER_QUERY_ARGS = "?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
-	private static final int YAHOO_PORT = 80;
+	private static final String YAHOO_TICKER_QUERY_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
 	private static final String YAHOO_SYMBOL_KEY = "symbol";
 	private static final String YAHOO_EXCHANGE_KEY = "exchDisp";
 	private static final String YAHOO_TYPE_KEY = "typeDisp";
@@ -35,20 +37,27 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		if (symbol == null || symbol.trim().length() == 0) {
 			throw new RequestFailedException("Symbol must be speficied for Yahoo! Finance ticker query");
 		}
-		String tickerQueryArgs = String.format(YAHOO_TICKER_QUERY_ARGS, symbol);
-		String tickerQueryURLWithArgs = YAHOO_TICKER_QUERY_URL + tickerQueryArgs;
+		String queryUrl = String.format(YAHOO_TICKER_QUERY_URL, symbol);
 		JSON response = null;
 		try {
-			Socket yahooConnection = new Socket(tickerQueryURLWithArgs, YAHOO_PORT);
-			Reader responseReader = new InputStreamReader(yahooConnection.getInputStream());
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(queryUrl);
+			int statusCode = client.executeMethod(method);
+	        if (statusCode != HttpStatus.SC_OK) {
+	          throw new ConnectException("Query to " + queryUrl + " failed [" + method.getStatusLine() + "]");
+	        }
+			byte[] responseBody = method.getResponseBody();
+			String responseString = new String(responseBody);
+			String jsonResponse = responseString.replace("YAHOO.Finance.SymbolSuggest.ssCallback(", "").replace(")","");
+			Reader responseReader = new StringReader(jsonResponse);
 			response = JSON.parse(responseReader); 
 		} catch (IOException e) {
-			throw new ConnectException("Exception while connecting to: " + tickerQueryURLWithArgs + "[" + e.getMessage() + "]");
+			throw new ConnectException("Exception while connecting to: " + queryUrl + " [" + e.getMessage() + "]");
 		} catch (JSONException e) {
-			throw new RequestFailedException("Exception querying to: " + tickerQueryURLWithArgs, e);
+			throw new RequestFailedException("Exception parsing response data from: " + queryUrl, e);
 		}
 		@SuppressWarnings("unchecked")
-		List<JSON> securityList = (List<JSON>) response.get("ResultSet").get("Result");
+		List<JSON> securityList = (List<JSON>) response.get("ResultSet").get("Result").getValue();
 		List<IContract> contractList = new LinkedList<IContract>();
 		for (JSON security : securityList) {
 			ContractBean contract = new ContractBean();

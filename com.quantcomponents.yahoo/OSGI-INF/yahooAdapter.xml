@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="com.quantcomponents.yahoo.adapter">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="ignore" enabled="true" immediate="true" name="com.quantcomponents.yahoo.adapter">
    <implementation class="com.quantcomponents.yahoo.YahooFinanceAdapterComponent"/>
    <service>
       <provide interface="com.quantcomponents.marketdata.IMarketDataProvider"/>

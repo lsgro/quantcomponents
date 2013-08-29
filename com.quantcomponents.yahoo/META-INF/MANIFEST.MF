@@ -4,8 +4,12 @@ Bundle-Name: Market data adapter for Yahoo! Finance
 Bundle-SymbolicName: com.quantcomponents.yahoo
 Bundle-Version: 1.0.0
 Bundle-Vendor: quantcomponents.com
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
 Import-Package: com.quantcomponents.core.exceptions,
  com.quantcomponents.core.model,
  com.quantcomponents.core.model.beans,
- com.quantcomponents.marketdata
+ com.quantcomponents.marketdata,
+ org.apache.commons.httpclient;version="3.1.0",
+ org.apache.commons.httpclient.methods;version="3.1.0"
+Service-Component: OSGI-INF/yahooAdapter.xml
