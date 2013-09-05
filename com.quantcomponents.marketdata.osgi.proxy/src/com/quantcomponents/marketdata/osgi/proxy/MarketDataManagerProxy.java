@@ -80,6 +80,16 @@ public class MarketDataManagerProxy implements IMarketDataManager, IStockDatabas
 	}
 
 	@Override
+	public DataType[] availableDataTypes() {
+		return getMarketDataManagerHost().availableDataTypes();
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return getMarketDataManagerHost().availableBarSizes();
+	}
+
+	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
 		return getMarketDataManagerHost().searchContracts(criteria, taskMonitor == null ? null : taskMonitorHost.addTaskMonitor(taskMonitor));
 	}

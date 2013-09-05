@@ -99,7 +99,17 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 		}
 		return null;
 	}
-	
+
+	@Override
+	public DataType[] availableDataTypes() {
+		return ibAdapter.availableDataTypes();
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return ibAdapter.availableBarSizes();
+	}
+
 	@Override
 	public Deque<ITrade> getTrades() throws ConnectException, RequestFailedException {
 		return ibAdapter.getTrades();

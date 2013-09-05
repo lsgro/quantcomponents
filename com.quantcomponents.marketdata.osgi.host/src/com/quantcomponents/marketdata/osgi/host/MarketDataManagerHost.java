@@ -87,6 +87,16 @@ public class MarketDataManagerHost implements IMarketDataManagerHost {
 		return getMarketDataManager().getPrettyName();
 	}
 
+	@Override
+	public DataType[] availableDataTypes() {
+		return getMarketDataManager().availableDataTypes();
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return getMarketDataManager().availableBarSizes();
+	}
+
 	public List<IContract> searchContracts(IContract criteria, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException, RequestFailedException {
 		return getMarketDataManager().searchContracts(criteria, taskMonitorHost == null || taskMonitorHandle == null ? null : new TaskMonitorProxy(taskMonitorHost, taskMonitorHandle));
 	}

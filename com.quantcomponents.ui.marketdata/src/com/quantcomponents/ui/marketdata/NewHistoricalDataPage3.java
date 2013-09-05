@@ -32,11 +32,13 @@ import com.quantcomponents.core.model.BarSize;
 import com.quantcomponents.core.model.DataType;
 import com.quantcomponents.core.model.IContract;
 import com.quantcomponents.core.model.UnitOfTime;
+import com.quantcomponents.marketdata.IMarketDataManager;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
 
 public class NewHistoricalDataPage3 extends WizardPage {
 	private static final Currency DOLLAR = Currency.getInstance("USD");
 
-	private final boolean realTimeUpdateAvailable;
+	private final IMarketDataManager marketDataManager;
 	private PeriodCombo periodEdit;
 	private Combo dataTypeEdit;
 	private Combo barSizeEdit;
@@ -54,15 +56,15 @@ public class NewHistoricalDataPage3 extends WizardPage {
 
 	private TimeZone contractTimeZone;
 
-	protected NewHistoricalDataPage3(boolean realTimeUpdateAvailable) {
+	protected NewHistoricalDataPage3(IMarketDataManager marketDataManager) {
 		super("Download historical data");
-		this.realTimeUpdateAvailable = realTimeUpdateAvailable; 
+		this.marketDataManager = marketDataManager; 
 	}
 
 	private void initialize() {
 		periodEdit.select("1", 1);
-		barSizeEdit.select(8);
-		dataTypeEdit.select(DataType.TRADES.ordinal());
+		barSizeEdit.select(0);
+		dataTypeEdit.select(0);
 	}
 
 	@Override
@@ -95,9 +97,9 @@ public class NewHistoricalDataPage3 extends WizardPage {
 		GridData dataTypeLayoutData = new GridData();
 		dataTypeLayoutData.horizontalSpan = 3;
 		dataTypeEdit.setLayoutData(dataTypeLayoutData);
-		String[] dataTypeValues = new String[DataType.values().length];
-		for (int i = 0; i < DataType.values().length; i++) {
-			dataTypeValues[i] = DataType.values()[i].name();
+		String[] dataTypeValues = new String[marketDataManager.availableDataTypes().length];
+		for (int i = 0; i < marketDataManager.availableDataTypes().length; i++) {
+			dataTypeValues[i] = marketDataManager.availableDataTypes()[i].name();
 		}
 		dataTypeEdit.setItems(dataTypeValues);
 
@@ -105,9 +107,9 @@ public class NewHistoricalDataPage3 extends WizardPage {
 		barSizeLabel.setText("Bar Size");
 		
 		barSizeEdit = new Combo(dataSpecContainer, SWT.READ_ONLY);
-		String[] barSizeValues = new String[BarSize.values().length];
-		for (int i = 0; i < BarSize.values().length; i++) {
-			barSizeValues[i] = BarSize.values()[i].name();
+		String[] barSizeValues = new String[marketDataManager.availableBarSizes().length];
+		for (int i = 0; i < marketDataManager.availableBarSizes().length; i++) {
+			barSizeValues[i] = marketDataManager.availableBarSizes()[i].name();
 		}
 		barSizeEdit.setItems(barSizeValues);
 		
@@ -118,7 +120,7 @@ public class NewHistoricalDataPage3 extends WizardPage {
 		realtimeButton = new Button(dataSpecContainer, SWT.CHECK);
 		realtimeButton.setText("Realtime update");
 		realtimeButton.setSelection(false);
-		realtimeButton.setEnabled(realTimeUpdateAvailable);
+		realtimeButton.setEnabled(marketDataManager instanceof IRealTimeMarketDataManager);
 		
 		endDateLabel = new Label(dataSpecContainer, SWT.NULL);
 		endDateLabel.setText("End Date");
@@ -152,7 +154,7 @@ public class NewHistoricalDataPage3 extends WizardPage {
 				endTimeEdit.setTime(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
 			}});
 		
-		if (realTimeUpdateAvailable) {
+		if (marketDataManager instanceof IRealTimeMarketDataManager) {
 			realtimeButton.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {

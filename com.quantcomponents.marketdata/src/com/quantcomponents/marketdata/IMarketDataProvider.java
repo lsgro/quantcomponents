@@ -25,6 +25,16 @@ import com.quantcomponents.core.model.OrderSide;
  */
 public interface IMarketDataProvider {
 	/**
+	 * Data types available - default as first element
+	 * @return an array of DataType
+	 */
+	DataType[] availableDataTypes();
+	/**
+	 * Bar sizes available - default as first element
+	 * @return an array of BarSize
+	 */
+	BarSize[] availableBarSizes();
+	/**
 	 * Listener of realtime price bars
 	 */
 	public interface IRealTimeDataListener {

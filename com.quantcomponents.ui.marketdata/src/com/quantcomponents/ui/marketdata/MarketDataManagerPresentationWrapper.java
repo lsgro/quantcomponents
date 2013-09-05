@@ -85,6 +85,17 @@ public class MarketDataManagerPresentationWrapper implements IMarketDataManager,
 		}
 	}
 
+
+	@Override
+	public DataType[] availableDataTypes() {
+		return getMarketDataManager().availableDataTypes();
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return getMarketDataManager().availableBarSizes();
+	}
+
 	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
 		return getMarketDataManager().searchContracts(criteria, taskMonitor);

@@ -42,7 +42,21 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final String YAHOO_BROKER_ID = "Yahoo!";
 	
 	private final Pattern STOCK_CURRENCY_PATTERN = Pattern.compile(".*Currency in (...)\\..*", Pattern.DOTALL);
-	
+
+	@Override
+	public DataType[] availableDataTypes() {
+		return new DataType[] {
+			DataType.MIDPOINT};
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return new BarSize[] {
+			BarSize.ONE_DAY,
+			BarSize.ONE_WEEK,
+			BarSize.ONE_MONTH};
+	}
+
 	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
 		String symbol = criteria.getSymbol();

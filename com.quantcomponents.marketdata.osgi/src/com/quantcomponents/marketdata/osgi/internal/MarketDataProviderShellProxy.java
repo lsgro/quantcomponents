@@ -29,6 +29,16 @@ public class MarketDataProviderShellProxy implements IRealTimeMarketDataProvider
 	}
 
 	@Override
+	public DataType[] availableDataTypes() {
+		return service.availableDataTypes();
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return service.availableBarSizes();
+	}
+
+	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
 		return service.searchContracts(criteria, taskMonitor);
 	}

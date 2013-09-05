@@ -331,6 +331,38 @@ public class IBAdapter implements IRealTimeMarketDataProvider, IExecutionService
 	}
 
 	@Override
+	public DataType[] availableDataTypes() {
+		return new DataType[] {
+			DataType.TRADES,
+			DataType.BID_ASK,
+			DataType.MIDPOINT,
+			DataType.BID,
+			DataType.ASK,
+			DataType.VOLUME};
+	}
+
+	@Override
+	public BarSize[] availableBarSizes() {
+		return new BarSize[] {
+			BarSize.FIVE_MINS,
+			BarSize.ONE_SEC,
+			BarSize.FIVE_SECS,
+			BarSize.TEN_SECS,
+			BarSize.FIFTEEN_SECS,
+			BarSize.THIRTY_SECS,
+			BarSize.ONE_MIN,
+			BarSize.TWO_MINS,
+			BarSize.THREE_MINS,
+			BarSize.TEN_MINS,
+			BarSize.FIFTEEN_MINS,
+			BarSize.TWENTY_MINS,
+			BarSize.THIRTY_MINS,
+			BarSize.ONE_HOUR,
+			BarSize.FOUR_HOURS,
+			BarSize.ONE_DAY};
+	}
+
+	@Override
 	public Deque<ITrade> getTrades() throws ConnectException, RequestFailedException {
 		SimpleDateFormat executionFilterDateFormat = new SimpleDateFormat("yyyyMMdd-00:00:00");
 		final ExecutionFilter filter = new ExecutionFilter();

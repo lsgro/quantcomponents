@@ -31,7 +31,9 @@ public enum BarSize {
 	THIRTY_MINS(30L * 60L * 1000L),
 	ONE_HOUR(60L * 60L * 1000L),
 	FOUR_HOURS(4L * 60L * 60L * 1000L),
-	ONE_DAY(24L * 60L * 60L * 1000L);
+	ONE_DAY(24L * 60L * 60L * 1000L),
+	ONE_WEEK(7L * 24L * 60L * 60L * 1000L),
+	ONE_MONTH(30L * 24L * 60L * 60L * 1000L);
 	
 	private long durationInMs;
 	

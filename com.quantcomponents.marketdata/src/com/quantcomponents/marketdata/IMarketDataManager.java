@@ -29,6 +29,16 @@ import com.quantcomponents.core.model.ITaskMonitor;
  */
 public interface IMarketDataManager extends ISeriesProvider<Date, Double>, IPrettyNamed {
 	/**
+	 * Data types available - default as first element
+	 * @return an array of DataType
+	 */
+	DataType[] availableDataTypes();
+	/**
+	 * Bar sizes available - default as first element
+	 * @return an array of BarSize
+	 */
+	BarSize[] availableBarSizes();
+	/**
 	 * Search contracts based on criteria
 	 * @param criteria a partially filled contract bean, to be used as criteria for search
 	 * @param taskMonitor a task monitor to control the task

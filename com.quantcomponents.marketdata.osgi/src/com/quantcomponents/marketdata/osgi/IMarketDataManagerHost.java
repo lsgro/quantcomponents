@@ -24,6 +24,8 @@ import com.quantcomponents.core.remote.ITaskMonitorHost;
 import com.quantcomponents.core.remote.ServiceHandle;
 
 public interface IMarketDataManagerHost extends IPrettyNamed {
+	DataType[] availableDataTypes();
+	BarSize[] availableBarSizes();
 	List<IContract> searchContracts(IContract criteria, ServiceHandle<ITaskMonitorHost> taskMonitorHandle) throws ConnectException, RequestFailedException;
 	Collection<ServiceHandle<IStockDatabaseHost>> getAllStockDatabases();
 	ServiceHandle<IStockDatabaseHost> findStockDatabase(IContract contract, DataType dataType, BarSize barSize, Boolean includeAfterHours);
