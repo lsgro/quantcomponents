@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.ConnectException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.LinkedList;
@@ -30,11 +34,15 @@ import com.quantcomponents.core.model.beans.ContractBean;
 import com.quantcomponents.core.model.beans.ContractDescBean;
 import com.quantcomponents.marketdata.IMarketDataProvider;
 import com.quantcomponents.marketdata.IOHLCPoint;
+import com.quantcomponents.marketdata.OHLCPoint;
 
 public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final Logger logger = Logger.getLogger("YahooFinanceAdapterComponent");
 	private static final String YAHOO_TICKER_QUERY_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
 	private static final String YAHOO_STOCK_QUERY_URL = "http://finance.yahoo.com/q?s=%s";
+	private static final String YAHOO_STOCK_PRICES_QUERY_URL = "http://ichart.finance.yahoo.com/table.csv?s=%s&a=%d&b=%d&c=%d&d=%d&e=%s&f=%d&g=%s&ignore=.csv";
+	private static final String YAHOO_STOCK_PRICES_HEADER = "Date,Open,High,Low,Close,Volume,Adj Close";
+	private static final String YAHOO_STOCK_PRICES_DATE_FORMAT = "yyyy-MM-dd";
 	private static final String YAHOO_SYMBOL_KEY = "symbol";
 	private static final String YAHOO_EXCHANGE_KEY = "exchDisp";
 	private static final String YAHOO_TYPE_KEY = "typeDisp";
@@ -42,6 +50,9 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final String YAHOO_BROKER_ID = "Yahoo!";
 	
 	private final Pattern STOCK_CURRENCY_PATTERN = Pattern.compile(".*Currency in (...)\\..*", Pattern.DOTALL);
+
+	// Assume all times in UTC for simplicity, as max data resolution is daily anyway
+	public static final TimeZone YAHOO_FINANCE_TIMEZONE = TimeZone.getTimeZone("UTC");
 
 	@Override
 	public DataType[] availableDataTypes() {
@@ -93,11 +104,11 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 			ContractBean contract = new ContractBean();
 			contract.setSymbol((String) security.get(YAHOO_SYMBOL_KEY).getValue());
 			contract.setExchange((String) security.get(YAHOO_EXCHANGE_KEY).getValue());
-			contract.setSecurityType(convertSecurityType((String) security.get(YAHOO_TYPE_KEY).getValue()));
+			contract.setSecurityType(decodeSecurityType((String) security.get(YAHOO_TYPE_KEY).getValue()));
 			contract.setCurrency(stockCurrency);
 			ContractDescBean description = new ContractDescBean();
 			description.setLongName((String) security.get(YAHOO_DESCRIPTION_KEY).getValue());
-			description.setTimeZone(TimeZone.getDefault()); // I can't find a reliable source on Yahoo!Finance. A table indexed by exchange?.. Yeah! Why don't you do it? This is a list: http://finance.yahoo.com/exchanges
+			description.setTimeZone(YAHOO_FINANCE_TIMEZONE); 
 			contract.setContractDescription(description);
 			contract.setBrokerID(YAHOO_BROKER_ID);
 			contractList.add(contract);
@@ -108,11 +119,41 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	@Override
 	public List<IOHLCPoint> historicalBars(IContract contract, Date startDateTime, Date endDateTime, BarSize barSize, DataType dataType,
 			boolean includeAfterHours, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		// TODO Auto-generated method stub
-		return null;
+		Calendar cal = Calendar.getInstance(YAHOO_FINANCE_TIMEZONE);
+		cal.setTime(startDateTime);
+		int startDay = cal.get(Calendar.DATE);
+		int startMonth = cal.get(Calendar.MONTH);
+		int startYear = cal.get(Calendar.YEAR);
+		cal.setTime(endDateTime);
+		int endDay = cal.get(Calendar.DATE);
+		int endMonth = cal.get(Calendar.MONTH);
+		int endYear = cal.get(Calendar.YEAR);
+		String queryUrl = String.format(YAHOO_STOCK_PRICES_QUERY_URL, contract.getSymbol(), startMonth, startDay, startYear,
+				endMonth, endDay, endYear, encodeBarSize(barSize));
+		String responseString = null;
+		try {
+			responseString = httpQuery(queryUrl);
+		} catch (IOException e) {
+			throw new ConnectException("Exception while connecting to: " + queryUrl + " [" + e.getMessage() + "]");
+		}
+		String[] lines = responseString.split("\n");
+		if (!lines[0].equals(YAHOO_STOCK_PRICES_HEADER)) {
+			throw new RequestFailedException("Response format not recognized: " + responseString.substring(0, 200) + "...");
+		}
+		List<IOHLCPoint> points = new LinkedList<IOHLCPoint>();
+		DateFormat dateFormat = new SimpleDateFormat(YAHOO_STOCK_PRICES_DATE_FORMAT);
+		for (int lineNo = 1; lineNo < lines.length; lineNo++) {
+			try {
+				IOHLCPoint point = parsePriceLine(lines[lineNo], barSize, dateFormat);
+				points.add(point);
+			} catch (ParseException e) {
+				throw new RequestFailedException("Error while parsing line: " + lineNo, e);
+			}
+		}		
+		return points;
 	}
 	
-	private SecurityType convertSecurityType(String code) {
+	private static SecurityType decodeSecurityType(String code) {
 		if ("Equity".equals(code) || "Fund".equals(code) || "ETF".equals(code)) {
 			return SecurityType.STK;
 		} else if ("Future".equals(code)) {
@@ -122,6 +163,39 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		} else {
 			return null;
 		}
+	}
+	
+	private static String encodeBarSize(BarSize barSize) throws RequestFailedException {
+		String code = null;
+		switch (barSize) {
+		case ONE_DAY:
+			code = "d";
+			break;
+		case ONE_WEEK:
+			code = "w";
+			break;
+		case ONE_MONTH:
+			code = "m";
+			break;
+		default:
+			throw new RequestFailedException("Price from Yahoo!Finance are only in daily, weekly, monthly periods");
+		}
+		return code;
+	}
+	
+	private static OHLCPoint parsePriceLine(String line, BarSize barSize, DateFormat dateFormat) throws ParseException {
+		String[] tokens = line.split(",");
+		if (tokens.length != 8) {
+			throw new IllegalArgumentException("Received invalid line: " + line);
+		}
+		Date date = dateFormat.parse(tokens[0]);
+		Double open = Double.parseDouble(tokens[1]);
+		Double high = Double.parseDouble(tokens[2]);
+		Double low = Double.parseDouble(tokens[3]);
+		Double close = Double.parseDouble(tokens[4]);
+		Long volume = Long.parseLong(tokens[5]);
+		OHLCPoint point = new OHLCPoint(barSize, date, open, high, low, close, volume, (open + close) / 2, 1);
+		return point;
 	}
 	
 	private static class StockInfo {
