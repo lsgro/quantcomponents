@@ -62,7 +62,7 @@ public class NewHistoricalDataPage3 extends WizardPage {
 	}
 
 	private void initialize() {
-		periodEdit.select("1", 1);
+		periodEdit.select("1", UnitOfTime.MONTH.ordinal());
 		barSizeEdit.select(0);
 		dataTypeEdit.select(0);
 	}

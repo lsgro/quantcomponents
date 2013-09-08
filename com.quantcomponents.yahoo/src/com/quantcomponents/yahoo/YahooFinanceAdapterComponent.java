@@ -3,7 +3,9 @@ package com.quantcomponents.yahoo;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,10 +46,12 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final String YAHOO_STOCK_PRICES_HEADER = "Date,Open,High,Low,Close,Volume,Adj Close";
 	private static final String YAHOO_STOCK_PRICES_DATE_FORMAT = "yyyy-MM-dd";
 	private static final String YAHOO_SYMBOL_KEY = "symbol";
-	private static final String YAHOO_EXCHANGE_KEY = "exchDisp";
+	private static final String YAHOO_EXCHANGE_DISPLAY_KEY = "exchDisp";
+	private static final String YAHOO_EXCHANGE_KEY = "exch";
 	private static final String YAHOO_TYPE_KEY = "typeDisp";
 	private static final String YAHOO_DESCRIPTION_KEY = "name";
 	private static final String YAHOO_BROKER_ID = "Yahoo!";
+	private static final String URL_ENCODING_ENCODING = "UTF-8";
 	
 	private final Pattern STOCK_CURRENCY_PATTERN = Pattern.compile(".*Currency in (...)\\..*", Pattern.DOTALL);
 
@@ -74,12 +78,20 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		if (symbol == null || symbol.trim().length() == 0) {
 			throw new RequestFailedException("Symbol must be speficied for Yahoo! Finance ticker query");
 		}
-		String queryUrl = String.format(YAHOO_TICKER_QUERY_URL, symbol);
+		String quotedSymbol;
+		try {
+			quotedSymbol = URLEncoder.encode(symbol, URL_ENCODING_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			throw new RequestFailedException("Exception encoding symbol: " + symbol, e);
+		}
+		String queryUrl = String.format(YAHOO_TICKER_QUERY_URL, quotedSymbol);
+		logger.log(Level.INFO, "Query Yahoo!Finance for tickers: " + queryUrl);
 		JSON response = null;
 		try {
 			String responseString = httpQuery(queryUrl);
 			String jsonResponse = responseString.replace("YAHOO.Finance.SymbolSuggest.ssCallback(", "").replace(")","");
 			Reader responseReader = new StringReader(jsonResponse);
+			logger.log(Level.FINE, "Response from Yahoo!Finance: " + jsonResponse);
 			response = JSON.parse(responseReader); 
 		} catch (IOException e) {
 			throw new ConnectException("Exception while connecting to: " + queryUrl + " [" + e.getMessage() + "]");
@@ -90,30 +102,62 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		List<JSON> securityList = (List<JSON>) response.get("ResultSet").get("Result").getValue();
 		List<IContract> contractList = new LinkedList<IContract>();
 		for (JSON security : securityList) {
+			String ticker = (String) security.get(YAHOO_SYMBOL_KEY).getValue();
+			logger.log(Level.INFO, "Query information about stock: " + ticker);
 			Currency stockCurrency = null;
 			try {
-				StockInfo stockInfo = getStockInfo(symbol);
+				StockInfo stockInfo = getStockInfo(ticker);
 				stockCurrency = stockInfo.currency;
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Exception while querying currency for: " + symbol, e);
+				logger.log(Level.SEVERE, "Exception while querying currency for: " + ticker, e);
 				continue;
 			}
 			if (criteria.getCurrency() != null && !criteria.getCurrency().equals(stockCurrency)) {
 				continue;
 			}
 			ContractBean contract = new ContractBean();
-			contract.setSymbol((String) security.get(YAHOO_SYMBOL_KEY).getValue());
-			contract.setExchange((String) security.get(YAHOO_EXCHANGE_KEY).getValue());
-			contract.setSecurityType(decodeSecurityType((String) security.get(YAHOO_TYPE_KEY).getValue()));
+			contract.setSymbol(ticker);
+			contract.setExchange(extractExchange(security));
+			contract.setSecurityType(decodeSecurityType(extractSecurityType(security)));
 			contract.setCurrency(stockCurrency);
 			ContractDescBean description = new ContractDescBean();
-			description.setLongName((String) security.get(YAHOO_DESCRIPTION_KEY).getValue());
+			description.setLongName(extractDescription(security));
 			description.setTimeZone(YAHOO_FINANCE_TIMEZONE); 
 			contract.setContractDescription(description);
 			contract.setBrokerID(YAHOO_BROKER_ID);
 			contractList.add(contract);
 		}
 		return contractList;
+	}
+	
+	private static String extractSecurityType(JSON security) {
+		String type = null;
+		JSON typeNode = security.get(YAHOO_TYPE_KEY);
+		if (typeNode != null) {
+			type = (String) typeNode.getValue();
+		}
+		return type;
+	}
+	
+	private static String extractExchange(JSON security) {
+		String exchange = "UNKNOWN";
+		JSON exchangeNode = security.get(YAHOO_EXCHANGE_DISPLAY_KEY);
+		if (exchangeNode == null) {
+			exchangeNode = security.get(YAHOO_EXCHANGE_KEY);
+		}
+		if (exchangeNode != null) {
+			exchange = (String) exchangeNode.getValue();
+		}
+		return exchange;
+	}
+
+	private static String extractDescription(JSON security) {
+		String description = "";
+		JSON descNode = security.get(YAHOO_DESCRIPTION_KEY);
+		if (descNode != null) {
+			description = (String) descNode.getValue();
+		}
+		return description;
 	}
 
 	@Override
@@ -130,21 +174,25 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		int endYear = cal.get(Calendar.YEAR);
 		String queryUrl = String.format(YAHOO_STOCK_PRICES_QUERY_URL, contract.getSymbol(), startMonth, startDay, startYear,
 				endMonth, endDay, endYear, encodeBarSize(barSize));
+		logger.log(Level.INFO, "Query Yahoo!Finance for historical prices: " + queryUrl);
 		String responseString = null;
 		try {
 			responseString = httpQuery(queryUrl);
 		} catch (IOException e) {
 			throw new ConnectException("Exception while connecting to: " + queryUrl + " [" + e.getMessage() + "]");
 		}
-		String[] lines = responseString.split("\n");
+		String[] lines = responseString.split("\\n");
+		logger.log(Level.INFO, "Received " + (lines.length - 1) + " lines");
 		if (!lines[0].equals(YAHOO_STOCK_PRICES_HEADER)) {
 			throw new RequestFailedException("Response format not recognized: " + responseString.substring(0, 200) + "...");
 		}
 		List<IOHLCPoint> points = new LinkedList<IOHLCPoint>();
 		DateFormat dateFormat = new SimpleDateFormat(YAHOO_STOCK_PRICES_DATE_FORMAT);
-		for (int lineNo = 1; lineNo < lines.length; lineNo++) {
+		for (int lineNo = lines.length - 1; lineNo > 0; lineNo--) { // Yahoo! returns prices in reverse chronological order
 			try {
+				logger.log(Level.INFO, "Processing line " + lineNo + ": " + lines[lineNo]);
 				IOHLCPoint point = parsePriceLine(lines[lineNo], barSize, dateFormat);
+				logger.log(Level.INFO, "Adding point" + point);
 				points.add(point);
 			} catch (ParseException e) {
 				throw new RequestFailedException("Error while parsing line: " + lineNo, e);
@@ -154,14 +202,12 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	}
 	
 	private static SecurityType decodeSecurityType(String code) {
-		if ("Equity".equals(code) || "Fund".equals(code) || "ETF".equals(code)) {
-			return SecurityType.STK;
-		} else if ("Future".equals(code)) {
+		if ("Future".equals(code)) {
 			return SecurityType.FUT;
 		} else if ("Index".equals(code)){
 			return SecurityType.IND;
 		} else {
-			return null;
+			return SecurityType.STK;
 		}
 	}
 	
@@ -185,7 +231,7 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	
 	private static OHLCPoint parsePriceLine(String line, BarSize barSize, DateFormat dateFormat) throws ParseException {
 		String[] tokens = line.split(",");
-		if (tokens.length != 8) {
+		if (tokens.length != 7) {
 			throw new IllegalArgumentException("Received invalid line: " + line);
 		}
 		Date date = dateFormat.parse(tokens[0]);
@@ -205,8 +251,14 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		Currency currency;
 	}
 
-	private StockInfo getStockInfo(String symbol) throws HttpException, IOException {
-		String queryUrl = String.format(YAHOO_STOCK_QUERY_URL, symbol);
+	private StockInfo getStockInfo(String symbol) throws RequestFailedException, HttpException, IOException {
+		String quotedSymbol;
+		try {
+			quotedSymbol = URLEncoder.encode(symbol, URL_ENCODING_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			throw new RequestFailedException("Exception encoding symbol: " + symbol, e);
+		}
+		String queryUrl = String.format(YAHOO_STOCK_QUERY_URL, quotedSymbol);
 		String responseString = httpQuery(queryUrl);
 		Matcher m = STOCK_CURRENCY_PATTERN.matcher(responseString);
 		if (!m.matches()) {
