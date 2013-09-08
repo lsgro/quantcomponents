@@ -91,7 +91,7 @@ public class NewHistoricalData extends Wizard implements IPageChangingListener {
 					}
 				}});
 		} catch (Exception e) {
-			MessageDialog.openError(getShell(), "Error", "IB contract search error: " + LangUtils.exceptionMessage(e));
+			MessageDialog.openError(getShell(), "Error", "Contract search error: " + LangUtils.exceptionMessage(e));
 			return Collections.emptyList();
 		}
 		if (contractList == null || contractList.isEmpty()) {
@@ -137,7 +137,7 @@ public class NewHistoricalData extends Wizard implements IPageChangingListener {
 			startDateTime = TimePeriod.subtractPeriodFromDate(endDateTime, period);
 			retrieveHistoricalData(stockDatabase, startDateTime, endDateTime);
 		} catch (InvocationTargetException e) {
-			if (!MessageDialog.openConfirm(this.getShell(), "Historical data error", "IB server error while retrieving historical data [" + e.getCause().getMessage() + "]\nContinue?")) {
+			if (!MessageDialog.openConfirm(this.getShell(), "Historical data error", "Server error while retrieving historical data [" + e.getCause().getMessage() + "]\nContinue?")) {
 				return false;
 			}
 		} catch (InterruptedException e) {
@@ -154,7 +154,7 @@ public class NewHistoricalData extends Wizard implements IPageChangingListener {
 				autoUpdateIconDecorator.fireLabelProviderChanged(stockDatabase);
 			}
 		} catch (InvocationTargetException e) {
-			displayErrorMessage("Auto-update error", "IB server error while setting auto-update", e.getCause().getMessage());
+			displayErrorMessage("Auto-update error", "Server error while setting auto-update", e.getCause().getMessage());
 		} catch (InterruptedException e) {
 			displayErrorMessage("Auto-update error", "Task interrupted while setting auto-update", e.getMessage());
 		} catch (Exception e) {

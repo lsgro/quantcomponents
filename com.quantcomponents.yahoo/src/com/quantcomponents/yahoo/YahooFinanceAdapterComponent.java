@@ -172,10 +172,17 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 		int endDay = cal.get(Calendar.DATE);
 		int endMonth = cal.get(Calendar.MONTH);
 		int endYear = cal.get(Calendar.YEAR);
-		String queryUrl = String.format(YAHOO_STOCK_PRICES_QUERY_URL, contract.getSymbol(), startMonth, startDay, startYear,
+		String quotedSymbol;
+		try {
+			quotedSymbol = URLEncoder.encode(contract.getSymbol(), URL_ENCODING_ENCODING);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RequestFailedException("Exception encoding symbol: " + contract.getSymbol(), e);
+		}		
+		String queryUrl = String.format(YAHOO_STOCK_PRICES_QUERY_URL, quotedSymbol, startMonth, startDay, startYear,
 				endMonth, endDay, endYear, encodeBarSize(barSize));
 		logger.log(Level.INFO, "Query Yahoo!Finance for historical prices: " + queryUrl);
-		String responseString = null;
+		String responseString;
 		try {
 			responseString = httpQuery(queryUrl);
 		} catch (IOException e) {
