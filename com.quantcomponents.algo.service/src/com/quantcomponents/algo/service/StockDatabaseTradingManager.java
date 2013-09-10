@@ -136,6 +136,11 @@ public class StockDatabaseTradingManager implements IStockDatabaseTradingManager
 	}
 
 	@Override
+	public boolean isExecutionTypeAvailable(ExecutionType type) {
+		return tradingManager.isExecutionTypeAvailable(type);
+	}
+
+	@Override
 	public TradingAgentExecutionHandle createExecution(TradingAgentBindingHandle bindingHandle, ExecutionType type) throws ExecutionCreationException {
 		return tradingManager.createExecution(bindingHandle, type);
 	}

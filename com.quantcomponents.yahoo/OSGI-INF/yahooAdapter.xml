@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="ignore" enabled="true" immediate="true" name="com.quantcomponents.yahoo.adapter">
-   <implementation class="com.quantcomponents.yahoo.YahooFinanceAdapterComponent"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="ignore" enabled="true" immediate="true" name="com.quantcomponents.yahoo.marketDataManager">
+   <implementation class="com.quantcomponents.yahoo.YahooFinanceMarketDataManager"/>
    <service>
-      <provide interface="com.quantcomponents.marketdata.IMarketDataProvider"/>
+      <provide interface="com.quantcomponents.marketdata.IMarketDataManager"/>
    </service>
+   <reference bind="setStockDatabaseContainerFactory" cardinality="1..1" interface="com.quantcomponents.marketdata.IStockDatabaseContainerFactory" name="IStockDatabaseContainerFactory" policy="static"/>
 </scr:component>

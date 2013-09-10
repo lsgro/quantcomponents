@@ -22,6 +22,12 @@ import com.quantcomponents.core.model.ISeriesPoint;
  */
 public interface ITradingAgentExecutionManager {
 	/**
+	 * Query availability of execution type
+	 * @param type type of execution: LIVE, PAPER or BACKTEST
+	 * @return true if the requested execution type is available, false otherwise
+	 */
+	boolean isExecutionTypeAvailable(ExecutionType type);
+	/**
 	 * Create an execution from a bound trading algorithm
 	 * @param bindingHandle handle to the bound trading algorithm
 	 * @param type type of execution: LIVE, PAPER or BACKTEST

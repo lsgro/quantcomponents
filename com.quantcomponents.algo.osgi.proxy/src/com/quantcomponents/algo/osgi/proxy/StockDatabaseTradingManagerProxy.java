@@ -157,6 +157,11 @@ public class StockDatabaseTradingManagerProxy implements IStockDatabaseTradingMa
 	}
 	
 	@Override
+	public boolean isExecutionTypeAvailable(ExecutionType type) {
+		return tradingManagerHost.isExecutionTypeAvailable(type);
+	}
+	
+	@Override
 	public TradingAgentExecutionHandle createExecution(TradingAgentBindingHandle bindingHandle, ExecutionType type) throws ExecutionCreationException {
 		return tradingManagerHost.createExecution(bindingHandle, type);
 	}

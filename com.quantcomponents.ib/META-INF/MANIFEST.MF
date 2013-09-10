@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Interactive Brokers Adapter
 Bundle-SymbolicName: com.quantcomponents.ib
-Bundle-Version: 1.0.0
+Bundle-Version: 1.5.0
 Bundle-Vendor: quantcomponents.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
  JavaSE-1.7

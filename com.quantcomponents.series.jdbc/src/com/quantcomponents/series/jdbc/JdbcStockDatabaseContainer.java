@@ -113,9 +113,9 @@ public class JdbcStockDatabaseContainer implements IStockDatabaseContainer {
 	private final Map<IStockDatabase, StockDbCacheInfo> cacheByStockDb = new HashMap<IStockDatabase, StockDbCacheInfo>();
 	private final BlockingQueue<OHLCEvent> ohlcEventsQueue = new LinkedBlockingQueue<OHLCEvent>(); 
 	private final BlockingQueue<TickEvent> tickEventsQueue = new LinkedBlockingQueue<TickEvent>(); 
-	private volatile IStockDatabaseHeaderDao stockDbHeaderDao;
-	private volatile IOHLCPointDao ohlcPointDao;
-	private volatile ITickPointDao tickPointDao;
+	private final IStockDatabaseHeaderDao stockDbHeaderDao;
+	private final IOHLCPointDao ohlcPointDao;
+	private final ITickPointDao tickPointDao;
 	private volatile boolean interrupt;
 	private volatile boolean asyncPersistence = false;
 	private volatile Thread asyncOhlcPersisterThread;
@@ -161,25 +161,19 @@ public class JdbcStockDatabaseContainer implements IStockDatabaseContainer {
 			}
 		}};
 		
-	public void setStockDbHeaderDao(IStockDatabaseHeaderDao stockDbHeaderDao) {
+	public JdbcStockDatabaseContainer(IStockDatabaseHeaderDao stockDbHeaderDao, IOHLCPointDao ohlcPointDao, ITickPointDao tickPointDao) {
 		this.stockDbHeaderDao = stockDbHeaderDao;
-	}
-
-	public void setOhlcPointDao(IOHLCPointDao ohlcPointDao) {
 		this.ohlcPointDao = ohlcPointDao;
-	}
-
-	public void setTickPointDao(ITickPointDao tickPointDao) {
 		this.tickPointDao = tickPointDao;
 	}
-
-	public void activate() throws SQLException {
+		
+	public void start() throws SQLException {
 		init();
 		allStockDatabases();
 		startAsynchronousPersisters();
 	}
 	
-	public void deactivate() throws SQLException {
+	public void stop() throws SQLException {
 		stopAsynchronousPersisters();
 	}
 	

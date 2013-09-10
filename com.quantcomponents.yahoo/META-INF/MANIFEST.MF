@@ -9,7 +9,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
 Import-Package: com.quantcomponents.core.exceptions,
  com.quantcomponents.core.model,
  com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.utils,
  com.quantcomponents.marketdata,
  org.apache.commons.httpclient;version="3.1.0",
  org.apache.commons.httpclient.methods;version="3.1.0"
 Service-Component: OSGI-INF/yahooAdapter.xml
+Export-Package: com.quantcomponents.yahoo

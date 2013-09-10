@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Data Management Service
 Bundle-SymbolicName: com.quantcomponents.marketdata
-Bundle-Version: 1.0.0
+Bundle-Version: 1.5.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
  JavaSE-1.7
 Import-Package: com.quantcomponents.core.calendar,

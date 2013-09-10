@@ -344,6 +344,8 @@ public class TradingManagersView extends ViewPart {
 						selectedTradingAgentFactory = wrapper.getManager().getParent(selectedTradingAgentConfiguration);
 						selectedTradingAgentManager = wrapper.getManager();
 						delete.setEnabled(true);
+						executeLiveTradingAgentBinding.setEnabled(selectedTradingAgentManager.isExecutionTypeAvailable(ExecutionType.LIVE));
+						executeSimulatedTradingAgentBinding.setEnabled(selectedTradingAgentManager.isExecutionTypeAvailable(ExecutionType.BACKTEST));
 					} else if (currentlySelectedObject instanceof TradingAgentExecutionWrapper) {
 						TradingAgentExecutionWrapper wrapper = (TradingAgentExecutionWrapper) currentlySelectedObject;
 						selectedTradingAgentExecution = wrapper.getHandle();

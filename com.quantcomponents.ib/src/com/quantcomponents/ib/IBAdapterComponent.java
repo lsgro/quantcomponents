@@ -1,16 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2013 Luigi Sgro. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Luigi Sgro - initial API and implementation
- ******************************************************************************/
 package com.quantcomponents.ib;
 
 import java.net.ConnectException;
-import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +19,15 @@ import com.quantcomponents.core.model.BarSize;
 import com.quantcomponents.core.model.DataType;
 import com.quantcomponents.core.model.IContract;
 import com.quantcomponents.core.model.ITaskMonitor;
-import com.quantcomponents.marketdata.IOHLCPoint;
-import com.quantcomponents.marketdata.IRealTimeMarketDataProvider;
+import com.quantcomponents.core.utils.HostUtils;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
+import com.quantcomponents.marketdata.IStockDatabaseContainerFactory;
+import com.quantcomponents.marketdata.RealTimeMarketDataManager;
 
-public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecutionService {
-	private static final Logger logger = Logger.getLogger(IBAdapter.class.getName());
+public class IBAdapterComponent extends RealTimeMarketDataManager implements IRealTimeMarketDataManager, IExecutionService {
+	private static final Logger logger = Logger.getLogger(IBAdapterComponent.class.getName());
+	private static final String PRETTY_NAME = "InteractiveBrokers@" + HostUtils.hostname();
+	private static final String IB_DB_ID = "ib";
 	public static final String HOST_KEY = "host";
 	public static final String PORT_KEY = "port";
 	public static final String CLIENT_ID_KEY = "clientId";
@@ -41,9 +35,14 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 	public static final String FIRST_REQUEST_NO_KEY = "firstRequestNo";
 	public static final String NO_MKT_DATA_LINES_KEY = "noMktDataLinesKey";
 	
-	private IBAdapter ibAdapter;
+	private volatile IStockDatabaseContainerFactory stockDatabaseContainerFactory;	
+	private volatile IBAdapter ibAdapter;
 
-	public void activate(Map<?,?> properties) throws ConfigurationException {
+	public void setStockDatabaseContainerFactory(IStockDatabaseContainerFactory stockDatabaseContainerFactory) {
+		this.stockDatabaseContainerFactory = stockDatabaseContainerFactory;
+	}
+	
+	public void activate(Map<?,?> properties) throws Exception {
 		logger.log(Level.INFO, "Received new configuration: ");
 		for (Object key : properties.keySet()) {
 			logger.log(Level.INFO, key + " -> " + properties.get(key));
@@ -84,12 +83,14 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 		Integer noMktDataLinesKey = parsePropertyValue(noMktDataLinesKeyValue);
 	
 		ibAdapter = new IBAdapter(host, port, clientId, firstRequestNo, noMktDataLinesKey, accountId);
+		setMarketDataProvider(ibAdapter);
+		setStockDatabaseContainer(stockDatabaseContainerFactory.getInstance(IB_DB_ID));
 	}
 	
 	public void deactivate() {
 		ibAdapter.disconnect();
 	}
-	
+		
 	private Integer parsePropertyValue(Object propertyValue) {
 		if (propertyValue instanceof Integer) {
 			return (Integer) propertyValue;
@@ -99,7 +100,7 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 		}
 		return null;
 	}
-
+	
 	@Override
 	public DataType[] availableDataTypes() {
 		return ibAdapter.availableDataTypes();
@@ -118,34 +119,6 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 	@Override
 	public List<IContract> searchContracts(IContract criteria, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
 		return ibAdapter.searchContracts(criteria, taskMonitor);
-	}
-
-	@Override
-	public List<IOHLCPoint> historicalBars(IContract contract, Date startDateTime, Date endDateTime, BarSize barSize, DataType dataType,
-			boolean includeAfterHours, ITaskMonitor taskMonitor) throws ConnectException, RequestFailedException {
-		return ibAdapter.historicalBars(contract, startDateTime, endDateTime, barSize, dataType, includeAfterHours, taskMonitor);
-	}
-
-	@Override
-	public void startRealTimeBars(IContract contract, BarSize barSize, DataType dataType, boolean includeAfterHours, IRealTimeDataListener listener)
-			throws ConnectException, RequestFailedException {
-		ibAdapter.startRealTimeBars(contract, barSize, dataType, includeAfterHours, listener);
-	}
-
-	@Override
-	public void stopRealTimeBars(IContract contract, BarSize barSize, DataType dataType, boolean includeAfterHours, IRealTimeDataListener listener)
-			throws ConnectException {
-		ibAdapter.stopRealTimeBars(contract, barSize, dataType, includeAfterHours, listener);
-	}
-
-	@Override
-	public void startTicks(IContract contract, ITickListener listener) throws ConnectException, RequestFailedException {
-		ibAdapter.startTicks(contract, listener);
-	}
-
-	@Override
-	public void stopTicks(IContract contract, ITickListener listener) throws ConnectException {
-		ibAdapter.stopTicks(contract, listener);
 	}
 
 	@Override
@@ -176,5 +149,10 @@ public class IBAdapterComponent implements IRealTimeMarketDataProvider, IExecuti
 	@Override
 	public void removePositionListener(IPositionListener listener) throws ConnectException {
 		ibAdapter.removePositionListener(listener);
+	}
+
+	@Override
+	public String getPrettyName() {
+		return PRETTY_NAME;
 	}
 }

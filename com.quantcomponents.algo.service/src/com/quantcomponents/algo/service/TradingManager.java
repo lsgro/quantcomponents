@@ -9,8 +9,6 @@
  ******************************************************************************/
 package com.quantcomponents.algo.service;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -38,6 +36,7 @@ import com.quantcomponents.algo.TradingAgentFactoryHandle;
 import com.quantcomponents.core.model.ISeries;
 import com.quantcomponents.core.model.ISeriesPoint;
 import com.quantcomponents.core.series.LinkedListSeries;
+import com.quantcomponents.core.utils.HostUtils;
 
 public class TradingManager implements ITradingManager {
 	private static final Logger logger = Logger.getLogger(TradingManager.class.getName());
@@ -48,14 +47,7 @@ public class TradingManager implements ITradingManager {
 	private volatile ExecutorService threadPool;
 	
 	public TradingManager() {
-		String hostname;
-		try {
-			hostname = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			logger.log(Level.SEVERE, "Cound not find hostname", e);
-			hostname = "localhost";
-		}
-		name = "TradingManager@" + hostname;
+		name = "TradingManager@" + HostUtils.hostname();
 	}
 	
 	public void deactivate() { 
@@ -144,15 +136,12 @@ public class TradingManager implements ITradingManager {
 		TradingAgentBinding binding = retrieveBinding(bindingHandle);
 		ITradingAgentExecution execution;
 		ITradingAgent tradingAgent = binding.getConfiguration().newTradingAgent();
+		if (!isExecutionTypeAvailable(type)) {
+			throw new ExecutionCreationException(type.name() + " execution service not available");
+		}
 		if (type == ExecutionType.LIVE){
-			if (liveExecutionService == null) {
-				throw new ExecutionCreationException("Live execution service not available");
-			}
 			execution = new TradingAgentExecution(tradingAgent, liveExecutionService);
 		} else {
-			if (simulatedExecutionServiceFactory == null) {
-				throw new ExecutionCreationException("Simulated execution service factory not available");
-			}
 			execution = new SimulatedTradingAgentExecution(tradingAgent, simulatedExecutionServiceFactory.createSimulatedExecutionService());
 		}
 		String executionOutputSeriesId = "output-" + execution.toString();
@@ -287,6 +276,18 @@ public class TradingManager implements ITradingManager {
 	@Override
 	public TradingAgentBindingHandle getParent(TradingAgentExecutionHandle tradingAgentExecutionHandle) {
 		return hierarchyContainer.getParentHandle(tradingAgentExecutionHandle);
+	}
+
+	@Override
+	public boolean isExecutionTypeAvailable(ExecutionType type) {
+		switch(type) {
+		case LIVE:
+			return liveExecutionService != null;
+		case BACKTEST:
+			return simulatedExecutionServiceFactory != null;
+		default:
+			return false;
+		}
 	}
 
 }

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Marketdata
 Bundle-SymbolicName: com.quantcomponents.ui.marketdata;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.5.0
 Bundle-Activator: com.quantcomponents.ui.marketdata.MarketDataPlugin
 Bundle-Vendor: quantcomponents.com
 Require-Bundle: org.eclipse.ui,

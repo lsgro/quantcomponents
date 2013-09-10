@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: UI for algo services
 Bundle-SymbolicName: com.quantcomponents.ui.algo;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.1.0
 Bundle-Activator: com.quantcomponents.ui.algo.TradingAgentPlugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui;bundle-version="3.103.0"

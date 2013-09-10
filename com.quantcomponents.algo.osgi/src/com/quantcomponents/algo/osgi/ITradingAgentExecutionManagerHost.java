@@ -21,6 +21,7 @@ import com.quantcomponents.core.osgi.ISeriesHost;
 import com.quantcomponents.core.remote.ServiceHandle;
 
 public interface ITradingAgentExecutionManagerHost {
+	boolean isExecutionTypeAvailable(ExecutionType type);
 	TradingAgentExecutionHandle createExecution(TradingAgentBindingHandle bindingHandle, ExecutionType type) throws ExecutionCreationException;
 	ServiceHandle<? extends ISeriesHost<Date, Double, ISeriesPoint<Date, Double>>> getExecutionOutput(TradingAgentExecutionHandle executionHandle);
 	void removeExecution(TradingAgentExecutionHandle executionHandle);

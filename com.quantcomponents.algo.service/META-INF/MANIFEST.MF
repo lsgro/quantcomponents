@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Algo trading service
 Bundle-SymbolicName: com.quantcomponents.algo.service
-Bundle-Version: 1.0.0
+Bundle-Version: 1.5.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
  JavaSE-1.7
 Import-Package: com.quantcomponents.algo,
@@ -10,5 +10,6 @@ Import-Package: com.quantcomponents.algo,
  com.quantcomponents.core.model,
  com.quantcomponents.core.model.beans,
  com.quantcomponents.core.series,
+ com.quantcomponents.core.utils,
  com.quantcomponents.marketdata
 Service-Component: OSGI-INF/linearCommissionCalculator.xml,OSGI-INF/simulatedExecutionServiceFactory.xml,OSGI-INF/stockDatabaseTradingManager.xml,OSGI-INF/threadPool.xml,OSGI-INF/tradingManager.xml
