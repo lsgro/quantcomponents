@@ -10,3 +10,4 @@ Import-Package: com.quantcomponents.core.exceptions,
  com.quantcomponents.core.model.beans,
  com.quantcomponents.marketdata
 Service-Component: OSGI-INF/marketDataManager.xml
+Export-Package: com.quantcomponents.marketdata.service
