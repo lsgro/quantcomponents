@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="com.quantcomponents.marketdata.marketDataManager">
-   <implementation class="com.quantcomponents.marketdata.service.MarketDataManager"/>
-   <service>
-      <provide interface="com.quantcomponents.marketdata.IMarketDataManager"/>
-   </service>
-   <reference bind="setMarketDataProvider" cardinality="1..1" interface="com.quantcomponents.marketdata.IMarketDataProvider" name="IMarketDataProvider" policy="static"/>
-   <reference bind="setStockDatabaseContainer" cardinality="1..1" interface="com.quantcomponents.marketdata.IStockDatabaseContainer" name="IStockDatabaseContainer" policy="static"/>
-</scr:component>
