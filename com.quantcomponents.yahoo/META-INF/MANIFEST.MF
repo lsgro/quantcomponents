@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Market data adapter for Yahoo! Finance
 Bundle-SymbolicName: com.quantcomponents.yahoo
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Vendor: quantcomponents.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
  JavaSE-1.7

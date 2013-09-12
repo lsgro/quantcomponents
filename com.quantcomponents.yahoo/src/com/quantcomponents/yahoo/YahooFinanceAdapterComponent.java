@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -52,6 +53,8 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final String YAHOO_DESCRIPTION_KEY = "name";
 	private static final String YAHOO_BROKER_ID = "Yahoo!";
 	private static final String URL_ENCODING_ENCODING = "UTF-8";
+	private static final String PROXY_HOST_PROPERTY_KEY = "http.proxy.host";
+	private static final String PROXY_PORT_PROPERTY_KEY = "http.proxy.port";
 	
 	private final Pattern STOCK_CURRENCY_PATTERN = Pattern.compile(".*Currency in (...)\\..*", Pattern.DOTALL);
 
@@ -277,12 +280,21 @@ public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	
 	private String httpQuery(String url) throws HttpException, IOException {
 		HttpClient client = new HttpClient();
+		String proxyHost = System.getProperty(PROXY_HOST_PROPERTY_KEY);
+		String proxyPort = System.getProperty(PROXY_PORT_PROPERTY_KEY);
+		HostConfiguration config = new HostConfiguration();
+		if (proxyHost != null && proxyPort != null) {
+			logger.log(Level.INFO, "Accessing HTTP Yahoo! API via proxy: " + proxyHost + ":" + proxyPort);
+			int port = Integer.parseInt(proxyPort);
+			config.setProxy(proxyHost, port);
+		}
 		HttpMethod method = new GetMethod(url);
-		int statusCode = client.executeMethod(method);
+		int statusCode = client.executeMethod(config, method);
         if (statusCode != HttpStatus.SC_OK) {
           throw new ConnectException("Query to " + url + " failed [" + method.getStatusLine() + "]");
         }
 		byte[] responseBody = method.getResponseBody();
 		return new String(responseBody);
 	}
+	
 }
