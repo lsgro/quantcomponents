@@ -66,7 +66,9 @@ public abstract class ContractBase implements IContract {
 	public static String stringRepr(IContract contract) {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("contract [");
-		buffer.append(shortStringRepr(contract));
+		if (contract.getSymbol() != null && contract.getSecurityType() != null && contract.getCurrency() != null) {
+			buffer.append(shortStringRepr(contract));
+		}
 		buffer.append("]");
 		return buffer.toString();
 	}
