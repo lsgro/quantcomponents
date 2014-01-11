@@ -186,7 +186,7 @@ public class TradingManagersView extends ViewPart {
 		@Override
 		public void run() {
 			if (selectedTradingAgentExecution != null) {
-				if (selectedTradingAgentManager.getRunningStatus(selectedTradingAgentExecution) == RunningStatus.RUNNING) {
+				if (selectedTradingAgentManager.getRunningStatus(selectedTradingAgentExecution) != RunningStatus.RUNNING) {
 					MessageDialog.openError(parent.getShell(), "Wrong status", "Only running execution can be paused");
 					return;
 				}
