@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Demo market data
+Bundle-SymbolicName: com.quantcomponents.demo.marketdata
+Bundle-Version: 1.0.0
+Bundle-Vendor: quantcomponents.com
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
+Import-Package: com.quantcomponents.core.calendar,
+ com.quantcomponents.core.exceptions,
+ com.quantcomponents.core.model,
+ com.quantcomponents.core.model.beans,
+ com.quantcomponents.core.series,
+ com.quantcomponents.core.utils,
+ com.quantcomponents.marketdata
+Service-Component: OSGI-INF/simulatedMarketDataProvider.xml
