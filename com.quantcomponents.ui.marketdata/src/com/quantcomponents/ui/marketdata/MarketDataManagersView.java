@@ -270,8 +270,8 @@ public class MarketDataManagersView extends ViewPart {
 						addStockDatabaseAction.setEnabled(true);
 						removeStockDatabaseAction.setEnabled(true);
 						if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
-							startAutoUpdateAction.setEnabled(false);
-							stopAutoUpdateAction.setEnabled(false);
+							startAutoUpdateAction.setEnabled(true);
+							stopAutoUpdateAction.setEnabled(true);
 						}
 						if (structuredSelection.size() > 0) {
 							Iterator<?> iterator = structuredSelection.iterator();
@@ -339,14 +339,14 @@ public class MarketDataManagersView extends ViewPart {
 		if (multipleStockDatabaseSelection.size() > 0) {
 			menuMgr.add(openViewAction);
 			menuMgr.add(removeStockDatabaseAction);
-			if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
-				startAutoUpdateAction.setEnabled(false);
-				stopAutoUpdateAction.setEnabled(false);
-			}
 		}
 		if (selectedMarketDataManager != null) {
 			menuMgr.add(addStockDatabaseAction);
 			menuMgr.add(refreshAction);
+			if (selectedMarketDataManager instanceof RealTimeMarketDataManagerPresentationWrapper) {
+				menuMgr.add(startAutoUpdateAction);
+				menuMgr.add(stopAutoUpdateAction);
+			}
 		}
 		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 	}

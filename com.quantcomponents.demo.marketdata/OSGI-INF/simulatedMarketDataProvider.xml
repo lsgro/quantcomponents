@@ -4,5 +4,6 @@
    <reference bind="setStockDatabaseContainerFactory" cardinality="1..1" interface="com.quantcomponents.marketdata.IStockDatabaseContainerFactory" name="IStockDatabaseContainerFactory" policy="static"/>
    <service>
       <provide interface="com.quantcomponents.marketdata.IRealTimeMarketDataManager"/>
+      <provide interface="com.quantcomponents.marketdata.IMarketDataManager"/>
    </service>
 </scr:component>

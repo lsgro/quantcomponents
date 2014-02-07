@@ -26,7 +26,7 @@ public class RealTimeMarketDataManagerPresentationWrapper extends MarketDataMana
 	}
 
 	public IRealTimeMarketDataManager getMarketDataManager() {
-		return (IRealTimeMarketDataManager) getMarketDataManager();
+		return (IRealTimeMarketDataManager) super.getMarketDataManager();
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.quantcomponents.marketdata.IMarketDataManager;
+import com.quantcomponents.marketdata.IRealTimeMarketDataManager;
 import com.quantcomponents.ui.core.IMonitorableContainerListener;
 import com.quantcomponents.ui.core.IMutableMonitorableContainer;
 
@@ -32,7 +33,12 @@ public class MarketDataManagerContainerWrappingDecorator implements IMutableMoni
 	
 	@Override
 	public void addElement(IMarketDataManager manager) {
-		MarketDataManagerPresentationWrapper wrapper = new MarketDataManagerPresentationWrapper(manager, this);
+		MarketDataManagerPresentationWrapper wrapper;
+		if (manager instanceof IRealTimeMarketDataManager) {
+			wrapper = new RealTimeMarketDataManagerPresentationWrapper((IRealTimeMarketDataManager) manager, this);			
+		} else {
+			wrapper = new MarketDataManagerPresentationWrapper(manager, this);
+		}
 		wrapperByManager.put(manager, wrapper);
 		container.addElement(wrapper);
 	}
