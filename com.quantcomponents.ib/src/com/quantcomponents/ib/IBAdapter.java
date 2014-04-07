@@ -204,7 +204,7 @@ public class IBAdapter implements IRealTimeMarketDataProvider, IExecutionService
 					final ITickListener tickListener = new ITickListener() {
 						@Override
 						public void onTick(ITickPoint tick) {
-							if (tick.getDataType() == DataType.TRADES) {
+							if (tick.getDataType() == DataType.TRADES || tick.getDataType() == DataType.MIDPOINT && SecurityType.CASH==contract.getSecurityType()) {
 								PositionPriceUpdater pu = positionUpdaters.get(contract);
 								if (pu != null) {
 									synchronized (pu) { // update position with current price
