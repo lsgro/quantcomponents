@@ -73,7 +73,7 @@ public abstract class IBClient extends IBWrapperHelper {
 			errorMessage = "id: " + id + "; code: " + errorCode + " [" + errorMsg + "]";
 			setRequestComplete();
 		}
-				if(errorCode==1101)//Connectivity between IB and TWS has been lost - data lost
+		if (errorCode == 1101) //Connectivity between IB and TWS has been lost - data lost
 		{
 			errorMessage = "id: " + id + "; code: " + errorCode + " [" + errorMsg + "]";
 			setRequestComplete();
