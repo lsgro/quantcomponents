@@ -53,6 +53,7 @@ import com.quantcomponents.core.model.BarSize;
 import com.quantcomponents.core.model.DataType;
 import com.quantcomponents.core.model.IContract;
 import com.quantcomponents.core.model.ITaskMonitor;
+import com.quantcomponents.core.model.SecurityType;
 import com.quantcomponents.core.model.TimePeriod;
 import com.quantcomponents.core.model.beans.ContractBean;
 import com.quantcomponents.core.model.beans.ImmutableContractBean;
