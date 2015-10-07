@@ -41,7 +41,7 @@ import com.quantcomponents.marketdata.OHLCPoint;
 
 public class YahooFinanceAdapterComponent implements IMarketDataProvider {
 	private static final Logger logger = Logger.getLogger("YahooFinanceAdapterComponent");
-	private static final String YAHOO_TICKER_QUERY_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
+	private static final String YAHOO_TICKER_QUERY_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&region=1&lang=en&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
 	private static final String YAHOO_STOCK_QUERY_URL = "http://finance.yahoo.com/q?s=%s";
 	private static final String YAHOO_STOCK_PRICES_QUERY_URL = "http://ichart.finance.yahoo.com/table.csv?s=%s&a=%d&b=%d&c=%d&d=%d&e=%s&f=%d&g=%s&ignore=.csv";
 	private static final String YAHOO_STOCK_PRICES_HEADER = "Date,Open,High,Low,Close,Volume,Adj Close";
